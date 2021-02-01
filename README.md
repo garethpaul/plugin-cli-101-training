@@ -52,6 +52,10 @@ twilio debugger:logs:list
 ### Plugins
 
 ```
+twilio plugins:install @twilio-labs/plugin-serverless
+```
+
+```
 twilio plugins:install @garethpaul/plugin-cli-101-training    
 ```
 
