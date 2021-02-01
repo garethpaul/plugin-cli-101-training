@@ -53,6 +53,7 @@ twilio debugger:logs:list
 
 ```
 twilio plugins:install @twilio-labs/plugin-serverless
+twilio serverless:init cli-101-training
 ```
 
 ```
@@ -63,92 +64,6 @@ twilio plugins:install @garethpaul/plugin-cli-101-training
 twilio plugins:install @twilio-labs/plugin-watch
 ```
 
-## Contents
-
-<!-- toc -->
-* [CLI 101 Training](#cli-101-training)
-<!-- tocstop -->
-## Install
-
-```
-$ twilio plugins:install @garethpaul/plugin-cli-101-training    
-```
-
-## Usage
-
-```sh-session
-$ twilio cli-101-training
-```
-
-
-## Commands
-<!-- commands -->
-* [`twilio cli-101-training:examples`](#twilio-cli-101-trainingexamples)
-* [`twilio cli-101-training:feedback`](#twilio-cli-101-trainingfeedback)
-* [`twilio cli-101-training:welcome`](#twilio-cli-101-trainingwelcome)
-
-## `twilio cli-101-training:examples`
-
-Twilio 101 Examples
-
-```
-USAGE
-  $ twilio cli-101-training:examples
-
-OPTIONS
-  --stage=development|staging|production
-```
-
-_See code: [src/commands/cli-101-training/examples.js](https://github.com/garethpaul/plugin-cli-101-training/blob/2.0.1/src/commands/cli-101-training/examples.js)_
-
-## `twilio cli-101-training:feedback`
-
-Welcome to Twilio 101 Training
-
-```
-USAGE
-  $ twilio cli-101-training:feedback
-
-OPTIONS
-  -l=(debug|info|warn|error|none)  [default: info] Level of logging messages.
-  -o=(columns|json|tsv)            [default: columns] Format of command output.
-  -p, --profile=profile            Shorthand identifier for your profile.
-```
-
-_See code: [src/commands/cli-101-training/feedback.js](https://github.com/garethpaul/plugin-cli-101-training/blob/2.0.1/src/commands/cli-101-training/feedback.js)_
-
-## `twilio cli-101-training:welcome`
-
-Welcome to Twilio 101 Training
-
-```
-USAGE
-  $ twilio cli-101-training:welcome
-
-OPTIONS
-  -l=(debug|info|warn|error|none)  [default: info] Level of logging messages.
-  -o=(columns|json|tsv)            [default: columns] Format of command output.
-  -p, --profile=profile            Shorthand identifier for your profile.
-```
-
-_See code: [src/commands/cli-101-training/welcome.js](https://github.com/garethpaul/plugin-cli-101-training/blob/2.0.1/src/commands/cli-101-training/welcome.js)_
-<!-- commandsstop -->
-
-```
-$ twilio cli-101-training:welcome
-```
-
-```
-$ twilio cli-101-training:examples
-```
-
-```
-$ twilio cli-101-training:feedback
-```
-
-```
-$ twilio cli-101-training:tips
-```
 
 ## Tips
 
