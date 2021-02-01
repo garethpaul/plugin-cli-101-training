@@ -1,7 +1,7 @@
 {
   "name": "@garethpaul/plugin-cli-101-training",
   "description": "Twilio CLI 101 Training",
-  "version": "1.0.0",
+  "version": "2.0.1",
   "author": "@garethpaul",
   "bugs": "https://github.com/garethpaul/plugin-cli-101-training/issues",
   "dependencies": {
@@ -23,6 +23,7 @@
     "mocha": "^7.1.2",
     "nyc": "^15.0.1"
   },
+
   "engines": {
     "node": ">=10.0.0"
   },
@@ -45,13 +46,13 @@
     ],
     "topics": {
       "twilio-101-training": {
-        "description": "just my simple plugin"
+        "description": "a twilio 101 training"
       }
     }
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/garethpaul/plugin-gjones.git"
+    "url": "https://github.com/garethpaul/plugin-cli-101-training.git"
   },
   "scripts": {
     "postpack": "rm -f oclif.manifest.json",
