@@ -12,6 +12,53 @@ This page should describe some of the contents for Twilio CLI 101.
 * [CLI Features Blog Post](https://www.twilio.com/blog/five-twilio-cli-features-you-should-know-about)
 * [CLI Plugins Flex Deploy and Release](https://www.twilio.com/docs/flex/developer/plugins/cli/deploy-and-release)
 
+## Key Concepts
+
+### Install
+
+```
+brew tap twilio/brew && brew install twilio
+```
+
+```
+npm install twilio-cli -g
+```
+
+### Login / Auth
+
+
+```
+twilio login
+```
+
+```
+twilio profiles:create
+```
+
+```
+export TWILIO_ACCOUNT_SID="";
+export TWILIO_API_KEY="";
+export TWILIO_API_SECRET="";
+```
+
+
+### Commands
+
+```
+twilio api:core:messages:list -o json
+twilio debugger:logs:list
+```
+
+### Plugins
+
+```
+twilio plugins:install @garethpaul/plugin-cli-101-training    
+```
+
+```
+twilio plugins:install @twilio-labs/plugin-watch
+```
+
 ## Contents
 
 <!-- toc -->
@@ -20,7 +67,7 @@ This page should describe some of the contents for Twilio CLI 101.
 ## Install
 
 ```
-$ twilio plugins:install @garethpaul/plugin-cli-101-training
+$ twilio plugins:install @garethpaul/plugin-cli-101-training    
 ```
 
 ## Usage
