@@ -29,15 +29,25 @@ Helpful reports include:
 - Review found external API integrations or credential-adjacent configuration; changes in those areas should receive security-focused review before merge.
 - Review found network clients, sockets, web APIs, or service endpoints; changes in those areas should receive security-focused review before merge.
 - Review found file, document, data, or media parsing flows; changes in those areas should receive security-focused review before merge.
+- Training examples use fake placeholder values and should have no phone-number
+  purchases, hidden account mutations, or real customer identifiers.
 - Dependency manifests detected: package.json. Dependency updates should preserve lockfiles when present and avoid introducing packages without a clear maintenance reason.
 
 ## Service and API Notes
 
 For web services, APIs, sockets, or scraping workflows, prioritize reports involving authentication bypass, authorization errors, injection, server-side request forgery, unsafe deserialization, credential leakage, data exposure, or denial-of-service conditions. Use test accounts and minimal proof-of-concept traffic only.
 
+For Twilio CLI training content, also report examples that include real-looking
+phone numbers, Account SIDs, Auth Tokens, webhook URLs, messaging service IDs,
+or commands that buy/update resources without an explicit warning. Review
+before running copied examples with live Twilio credentials.
+
 ## Dependency and Supply Chain Security
 
 Dependency updates should come from trusted package managers and should keep lockfiles in sync when lockfiles exist. Do not commit credentials, private keys, tokens, generated secrets, or machine-local configuration. If a vulnerability depends on a compromised package, typosquatting risk, insecure transitive dependency, or unsafe build step, include the package name, affected version, and the path through which it is used.
+
+Run `npm run check` before changing command examples, package scripts, or
+credential-adjacent Twilio CLI behavior.
 
 ## Safe Research Guidelines
 

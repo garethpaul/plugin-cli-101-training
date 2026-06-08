@@ -5,18 +5,28 @@
 
 ## Overview
 
-`garethpaul/plugin-cli-101-training` is a Node.js or JavaScript project. Twilio CLI 101 Training
+`garethpaul/plugin-cli-101-training` is an oclif-based Twilio CLI training
+plugin. It provides welcome text, feedback links, and copyable example commands
+for CLI 101 workshops.
+
+Examples use fake placeholder phone numbers and URLs. Review before running any
+copied command in a live Twilio account; training examples should have no
+phone-number purchases or hidden account mutations.
 
 This README is based on the checked-in source, manifests, scripts, and repository metadata on the `main` branch. The project language mix found during review was: JavaScript (3).
 
 ## Repository Contents
 
+- `.gitignore` - generated output, dependency, log, and environment ignores
+- `CHANGES.md` - baseline change log
 - `README.md` - project overview and local usage notes
 - `package.json` - JavaScript dependency and script metadata
 - `bin` - source or example code
 - `SECURITY.md` - security reporting and disclosure guidance
 - `src` - source or example code
 - `VISION.md` - project direction and maintenance guardrails
+- `docs/plans/2026-06-08-plugin-cli-101-training-baseline.md` - completed baseline plan
+- `scripts/check-baseline.js` - dependency-free static baseline checks
 
 Additional scan context:
 
@@ -44,25 +54,34 @@ The setup commands above are derived from repository files. Legacy mobile, Pytho
 
 ## Running or Using the Project
 
-- Inspect `package.json` for available npm scripts before running the project.
+- Run `npm run check` before changing commands or examples.
+- Use `./bin/run cli-101-training:welcome` to launch the welcome command after
+  dependencies are installed.
+- Use `./bin/run cli-101-training:examples --example sms` to print and copy a
+  specific example command.
 
 Detected npm scripts:
 
 - `npm run postpack` - `rm -f oclif.manifest.json`
-- `npm run posttest` - `eslint --ignore-path .gitignore . && npm audit`
 - `npm run prepack` - `oclif-dev manifest && oclif-dev readme`
-- `npm run test` - `nyc --check-coverage --lines 90 --reporter=html --reporter=text mocha --forbid-only "test/**/*.test.js"`
+- `npm run check` - `node scripts/check-baseline.js`
+- `npm run test` - `npm run check`
 - `npm run version` - `oclif-dev readme && git add README.md`
 
 ## Testing and Verification
 
+- `npm run check`
 - `npm test`
+- `node scripts/check-baseline.js`
 
 When the required SDK or runtime is unavailable, use static checks and source review first, then verify on a machine that has the matching platform toolchain.
 
 ## Configuration and Secrets
 
 - Detected references to Twilio. Keep API keys, OAuth credentials, tokens, and account-specific values in local configuration only.
+- Do not commit real Twilio credentials, Account SIDs, Auth Tokens, customer
+  phone numbers, messaging service IDs, webhook URLs, or workshop attendee
+  data.
 
 ## Security and Privacy Notes
 
@@ -70,9 +89,17 @@ When the required SDK or runtime is unavailable, use static checks and source re
 - Review changes touching external API calls or credential-adjacent configuration; examples from the scan include bin/run, package.json, src/commands/cli-101-training/examples.js, src/commands/cli-101-training/feedback.js, and 1 more.
 - Review changes touching network requests, sockets, or service endpoints; examples from the scan include appveyor.yml, package.json, src/commands/cli-101-training/examples.js, src/commands/cli-101-training/feedback.js.
 - Review changes touching file, media, JSON, XML, CSV, OCR, or data parsing; examples from the scan include appveyor.yml, package.json, src/commands/cli-101-training/examples.js.
+- Training commands can affect live accounts when copied with real credentials.
+  Keep side effects visible, use fake placeholder values, and prefer read-only
+  examples for phone-number workflows.
 
 ## Maintenance Notes
 
+- Run `npm run check` before changing examples, command prompts, package
+  scripts, or Twilio credential handling.
+- See `CHANGES.md` and
+  `docs/plans/2026-06-08-plugin-cli-101-training-baseline.md` for the current
+  safe-training baseline.
 - See `SECURITY.md` for vulnerability reporting and safe research guidance.
 - See `VISION.md` for project direction and contribution guardrails.
 

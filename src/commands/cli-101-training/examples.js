@@ -1,100 +1,64 @@
-const { flags } = require('@oclif/command');
-const { TwilioClientCommand } = require('@twilio/cli-core').baseCommands;
-const { TwilioCliError } = require('@twilio/cli-core').services.error;
-const {Command} = require('@oclif/command');
-const inquirer = require("inquirer");
-const clipboardy = require('clipboardy');
+const { Command, flags } = require('@oclif/command');
 const chalk = require('chalk');
+const clipboardy = require('clipboardy');
+const inquirer = require('inquirer');
 
+const EXAMPLE_COMMANDS = {
+  sms: `twilio api:core:messages:create \\
+  --to +15555550100 \\
+  --from +15555550101 \\
+  --body "Ahoy from CLI 101 training" \\
+  -o json`,
+  email: `twilio email:send \\
+  --to test@example.com \\
+  --from sender@example.com \\
+  --subject "Message log" \\
+  --text "Message log"`,
+  debugger: 'twilio debugger:logs:list',
+  plugins: 'twilio plugins',
+  'phone-numbers': 'twilio phone-numbers:search:local --country-code US --area-code 415',
+  webhook: 'twilio phone-numbers:update <YOUR_TWILIO_NUMBER> --sms-url=https://example.com/twilio/sms'
+};
 
-class examples extends Command {
-    static flags = {
-      stage: flags.string({options: ['development', 'staging', 'production']})
+const EXAMPLE_CHOICES = Object.keys(EXAMPLE_COMMANDS);
+
+class Examples extends Command {
+  static flags = {
+    example: flags.string({
+      char: 'e',
+      description: 'training example to copy',
+      options: EXAMPLE_CHOICES
+    })
+  };
+
+  async run() {
+    const { flags } = this.parse(Examples);
+    let example = flags.example;
+
+    if (!example) {
+      const responses = await inquirer.prompt([{
+        name: 'example',
+        message: 'Select an example',
+        type: 'list',
+        choices: EXAMPLE_CHOICES.map(name => ({ name }))
+      }]);
+      example = responses.example;
     }
-  
-    async run() {
 
-      const {flags} = this.parse(examples);
-      let example = flags.stage;
-      if (!example){
+    const command = EXAMPLE_COMMANDS[example];
+    this.log(`Here is an example command for ${chalk.bold(example)}:`);
+    this.log(command);
+    this.log('Review before running: phone numbers and URLs are placeholders.');
 
-        // ask user which position the employee is
-        let responses = await inquirer.prompt([{
-          name: 'example',
-          message: 'select a example',
-          type: 'list',
-          choices: [{name: 'sms'},
-                    {name: 'email'},
-                    {name: 'debugger'},
-                    {name: 'plugins'},
-                    {name: 'phone-numbers'},
-                    {name: 'webhook'},
-                  ],
-        }])
-        example = responses.example
-      }
-
-      if (example == "sms") {
-        const cmd = `twilio api:core:messages:create \
-        --to +12127363100 \
-        --from +14155551212 \
-        --body "Ahoy" \
-        -o json
-        `;
-        console.log("Here is an example command - ", chalk.bold('twilio api:core:messages:create'))
-        clipboardy.writeSync(cmd);
-      }
-
-      if (example == "email") {
-        const cmd = `
-        twilio email:send \
-          --to 'test@example.com'\
-          --from 'sender@example.com'\
-          --subject='Message log'\
-          --text 'Message log'
-        `
-        console.log("Here is an example command - ", chalk.bold('twilio email:send'))
-        clipboardy.writeSync(cmd);
-      }
-
-      if (example == "debugger") {
-        const cmd = `twilio debugger:logs:list`
-        console.log("Here is an example command - ", chalk.bold('twilio debugger:logs:list'))
-        clipboardy.writeSync(cmd);
-      }
-
-      if (example == "plugins") {
-        const cmd = `twilio watch`
-        console.log("Here is an example command - ", chalk.bold(cmd))
-        clipboardy.writeSync(cmd);
-      }
-
-      if (example == "phone-numbers") {
-        const cmd = `twilio phone-numbers:buy:local --country-code US`
-        console.log("Here is an example command - ", chalk.bold(cmd))
-        clipboardy.writeSync(cmd);
-      }
-
-
-      if (example == "webhook") {
-        const cmd = `twilio phone-numbers:update +12107574383 --sms-url=https://localhost:8000`
-        console.log("Here is an example command - ", chalk.bold(cmd))
-        clipboardy.writeSync(cmd);
-      }
-
-      
-
-
-
-      
-
-     
-
-            
+    try {
+      clipboardy.writeSync(command);
+      this.log('Copied the example command to the clipboard.');
+    } catch (error) {
+      this.log(`Clipboard copy skipped: ${error.message}`);
     }
+  }
 }
 
-examples.description =
-  "Twilio 101 Examples";
+Examples.description = 'Twilio 101 training examples';
 
-module.exports = examples;
+module.exports = Examples;
