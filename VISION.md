@@ -35,6 +35,11 @@ Contribution rules:
 
 ## Security And Responsible Use
 
+Canonical security policy and reporting:
+
+- [`SECURITY.md`](SECURITY.md)
+
+
 Training plugins can trigger real account actions if examples are copied with
 live credentials. Commands should make side effects obvious and should never
 hide account, messaging, webhook, or phone-number changes.
