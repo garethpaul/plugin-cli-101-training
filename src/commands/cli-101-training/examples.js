@@ -26,8 +26,11 @@ class Examples extends Command {
   static flags = {
     example: flags.string({
       char: 'e',
-      description: 'training example to copy',
+      description: 'training example to print',
       options: EXAMPLE_CHOICES
+    }),
+    copy: flags.boolean({
+      description: 'copy the selected example command to the clipboard after review'
     })
   };
 
@@ -50,11 +53,15 @@ class Examples extends Command {
     this.log(command);
     this.log('Review before running: phone numbers and URLs are placeholders.');
 
-    try {
-      clipboardy.writeSync(command);
-      this.log('Copied the example command to the clipboard.');
-    } catch (error) {
-      this.log(`Clipboard copy skipped: ${error.message}`);
+    if (flags.copy) {
+      try {
+        clipboardy.writeSync(command);
+        this.log('Copied the example command to the clipboard.');
+      } catch (error) {
+        this.log(`Clipboard copy skipped: ${error.message}`);
+      }
+    } else {
+      this.log('Clipboard copy skipped. Re-run with --copy after reviewing the command.');
     }
   }
 }

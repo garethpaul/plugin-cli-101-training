@@ -6,6 +6,7 @@ const path = require('path');
 
 const ROOT = path.resolve(__dirname, '..');
 const PLAN = 'docs/plans/2026-06-08-plugin-cli-101-training-baseline.md';
+const CLIPBOARD_PLAN = 'docs/plans/2026-06-08-plugin-cli-101-training-clipboard-opt-in.md';
 const REQUIRED = [
   '.gitignore',
   'CHANGES.md',
@@ -18,6 +19,7 @@ const REQUIRED = [
   'docs/readme-overview.svg',
   'package.json',
   PLAN,
+  CLIPBOARD_PLAN,
   'scripts/check-baseline.js',
   'src/commands/cli-101-training/examples.js',
   'src/commands/cli-101-training/feedback.js',
@@ -85,6 +87,9 @@ function main() {
     '<YOUR_TWILIO_NUMBER>',
     'phone-numbers:search:local',
     'Review before running',
+    'copy: flags.boolean',
+    'flags.copy',
+    'Re-run with --copy',
     'clipboardy.writeSync'
   ]) {
     if (!examples.includes(phrase)) {
@@ -134,7 +139,8 @@ function main() {
     'fake placeholder',
     'no phone-number purchases',
     'Twilio credentials',
-    'Review before running'
+    'Review before running',
+    '--copy'
   ]) {
     if (!docs.toLowerCase().includes(phrase.toLowerCase())) {
       failures.push(`docs must mention ${phrase}`);
@@ -144,6 +150,13 @@ function main() {
   const plan = read(PLAN);
   if (!plan.includes('status: completed') || !plan.includes('npm run check')) {
     failures.push('plan must record completed status and npm run check verification');
+  }
+
+  const clipboardPlan = read(CLIPBOARD_PLAN);
+  for (const phrase of ['status: completed', '--copy', 'clipboardy.writeSync', 'npm run check']) {
+    if (!clipboardPlan.includes(phrase)) {
+      failures.push(`clipboard plan must mention ${phrase}`);
+    }
   }
 
   const svg = read('docs/readme-overview.svg');

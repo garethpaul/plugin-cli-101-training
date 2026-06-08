@@ -6,12 +6,12 @@
 ## Overview
 
 `garethpaul/plugin-cli-101-training` is an oclif-based Twilio CLI training
-plugin. It provides welcome text, feedback links, and copyable example commands
-for CLI 101 workshops.
+plugin. It provides welcome text, feedback links, printable example commands,
+and opt-in clipboard copy for CLI 101 workshops.
 
 Examples use fake placeholder phone numbers and URLs. Review before running any
-copied command in a live Twilio account; training examples should have no
-phone-number purchases or hidden account mutations.
+command in a live Twilio account; training examples should have no phone-number
+purchases or hidden account mutations.
 
 This README is based on the checked-in source, manifests, scripts, and repository metadata on the `main` branch. The project language mix found during review was: JavaScript (3).
 
@@ -57,8 +57,10 @@ The setup commands above are derived from repository files. Legacy mobile, Pytho
 - Run `npm run check` before changing commands or examples.
 - Use `./bin/run cli-101-training:welcome` to launch the welcome command after
   dependencies are installed.
-- Use `./bin/run cli-101-training:examples --example sms` to print and copy a
-  specific example command.
+- Use `./bin/run cli-101-training:examples --example sms` to print a specific
+  example command.
+- Add `--copy` only after reviewing the command and deciding to place it on the
+  local clipboard.
 
 Detected npm scripts:
 
@@ -92,14 +94,15 @@ When the required SDK or runtime is unavailable, use static checks and source re
 - Training commands can affect live accounts when copied with real credentials.
   Keep side effects visible, use fake placeholder values, and prefer read-only
   examples for phone-number workflows.
+- Clipboard writes are opt-in through `--copy`; the default examples command
+  prints without changing the local clipboard.
 
 ## Maintenance Notes
 
 - Run `npm run check` before changing examples, command prompts, package
   scripts, or Twilio credential handling.
 - See `CHANGES.md` and
-  `docs/plans/2026-06-08-plugin-cli-101-training-baseline.md` for the current
-  safe-training baseline.
+  `docs/plans/` for the current safe-training baseline.
 - See `SECURITY.md` for vulnerability reporting and safe research guidance.
 - See `VISION.md` for project direction and contribution guardrails.
 

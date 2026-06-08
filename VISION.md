@@ -22,6 +22,7 @@ Priority:
 - Keep workshop examples easy to read and copy
 - Avoid embedding real phone numbers, account identifiers, or credentials
 - Keep phone-number workflows read-only unless side effects are explicit
+- Keep clipboard writes opt-in after command review
 - Maintain oclif packaging metadata for Twilio CLI plugin installation
 
 Next priorities:
@@ -38,6 +39,7 @@ Contribution rules:
 - Do not commit real Twilio credentials or customer data.
 - Keep command examples explicit about the environment they affect.
 - Keep examples on fake placeholder values and no phone-number purchases.
+- Keep clipboard copy behind an explicit flag.
 - Keep `npm run check` passing when command behavior changes.
 - Update README output when command behavior changes.
 

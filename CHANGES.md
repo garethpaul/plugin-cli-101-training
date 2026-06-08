@@ -13,3 +13,4 @@
 - Removed remote Codecov script execution from AppVeyor.
 - Added docs and checks that make side effects, placeholders, and clipboard
   behavior explicit.
+- Made example-command clipboard writes opt-in with `--copy`.
