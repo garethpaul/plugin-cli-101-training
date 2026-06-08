@@ -1,120 +1,85 @@
-@garethpaul/cli-101-training
-========================
+# plugin-cli-101-training
 
-# CLI 101 Training
+## Overview
 
-<!-- README-OVERVIEW-IMAGE -->
-![Project overview](docs/readme-overview.svg)
+`garethpaul/plugin-cli-101-training` is a Node.js or JavaScript project. Twilio CLI 101 Training
 
-This page should describe some of the contents for Twilio CLI 101. 
+This README is based on the checked-in source, manifests, scripts, and repository metadata on the `main` branch. The project language mix found during review was: JavaScript (3).
 
-## Suggested Reading
+## Repository Contents
 
-* [CLI Docs](https://www.twilio.com/docs/twilio-cli)
-* [CLI Plugin Docs](https://www.twilio.com/docs/twilio-cli/plugins)
-* [CLI Features Blog Post](https://www.twilio.com/blog/five-twilio-cli-features-you-should-know-about)
-* [CLI Plugins Flex Deploy and Release](https://www.twilio.com/docs/flex/developer/plugins/cli/deploy-and-release)
+- `README.md` - project overview and local usage notes
+- `package.json` - JavaScript dependency and script metadata
+- `bin` - source or example code
+- `SECURITY.md` - security reporting and disclosure guidance
+- `src` - source or example code
+- `VISION.md` - project direction and maintenance guardrails
 
-## Key Concepts
+Additional scan context:
 
-### Install
+- Source directories: bin, src
+- Dependency and build manifests: package.json
+- Entry points or build surfaces: package.json
+- Test-looking files: no obvious test files detected
 
-```
-brew tap twilio/brew && brew install twilio
-```
+## Getting Started
 
-```
-npm install twilio-cli -g
-```
+### Prerequisites
 
-### Login / Auth
+- Git
+- Node.js and npm
 
-```
-twilio login
-```
+### Setup
 
-```
-twilio profiles:create
-```
-
-```
-export TWILIO_ACCOUNT_SID="";
-export TWILIO_API_KEY="";
-export TWILIO_API_SECRET="";
+```bash
+git clone https://github.com/garethpaul/plugin-cli-101-training.git
+cd plugin-cli-101-training
+npm install
 ```
 
-### Commands
+The setup commands above are derived from repository files. Legacy mobile, Python, or JavaScript samples may require older SDKs or package versions than a modern workstation uses by default.
 
-```
-twilio api:core:messages:list -o json
-twilio debugger:logs:list
-```
+## Running or Using the Project
 
-### Plugins
+- Inspect `package.json` for available npm scripts before running the project.
 
-```
-twilio plugins:install @twilio-labs/plugin-serverless
-twilio serverless:init cli-101-training
-```
+Detected npm scripts:
 
-```
-twilio plugins:install @garethpaul/plugin-cli-101-training    
-```
+- `npm run postpack` - `rm -f oclif.manifest.json`
+- `npm run posttest` - `eslint --ignore-path .gitignore . && npm audit`
+- `npm run prepack` - `oclif-dev manifest && oclif-dev readme`
+- `npm run test` - `nyc --check-coverage --lines 90 --reporter=html --reporter=text mocha --forbid-only "test/**/*.test.js"`
+- `npm run version` - `oclif-dev readme && git add README.md`
 
-```
-twilio plugins:install @twilio-labs/plugin-watch
-```
+## Testing and Verification
 
-## Tips
+- `npm test`
 
-Here are some generalized tips
+When the required SDK or runtime is unavailable, use static checks and source review first, then verify on a machine that has the matching platform toolchain.
 
-### Enable Autocomplete
-```
-$ twilio autocomplete
-```
+## Configuration and Secrets
 
-### Enable Help
-```
-$ twilio --help
-```
+- Detected references to Twilio. Keep API keys, OAuth credentials, tokens, and account-specific values in local configuration only.
 
-### Enable Twilio Debugging
+## Security and Privacy Notes
 
-```
-$ twilio api:core:applications:list -l debug
-```
+- Review changes touching authentication or token handling; examples from the scan include src/commands/cli-101-training/welcome.js.
+- Review changes touching external API calls or credential-adjacent configuration; examples from the scan include bin/run, package.json, src/commands/cli-101-training/examples.js, src/commands/cli-101-training/feedback.js, and 1 more.
+- Review changes touching network requests, sockets, or service endpoints; examples from the scan include appveyor.yml, package.json, src/commands/cli-101-training/examples.js, src/commands/cli-101-training/feedback.js.
+- Review changes touching file, media, JSON, XML, CSV, OCR, or data parsing; examples from the scan include appveyor.yml, package.json, src/commands/cli-101-training/examples.js.
 
-### Enable Verbose Debugging
-```
-env DEBUG=*
-```
+## Maintenance Notes
 
-### Enable Autocomplete
+- See `SECURITY.md` for vulnerability reporting and safe research guidance.
+- See `VISION.md` for project direction and contribution guardrails.
 
-```
-  $ twilio autocomplete
-```
+## Contributing
 
-## Examples
+Keep changes small and tied to the project that is already present in this repository. For code changes, document the toolchain used, avoid committing generated dependency directories or local configuration, and update this README when setup or verification steps change.
 
-```
-  $ twilio profiles:list
-  $ twilio profiles:create
-  $ twilio profiles:use dev
+## Existing Project Notes
 
-  $ twilio api:core:keys:create --friendly-name=voice-client-javascript -o json
-  
-  $ twilio api:core:messages:list -o json
-  $ twilio api:core:messages:list -o tsv
-  
-  $ twilio api:core:accounts:list
+Prior README summary:
 
-```
+> @garethpaul/cli-101-training ======================== CLI 101 Training <!-- README-OVERVIEW-IMAGE --> This page should describe some of the contents for Twilio CLI 101. Suggested Reading * [CLI Docs](https://www.twilio.com/docs/twilio-cli) * [CLI Plugin Docs](https://www.twilio.com/docs/twilio-cli/plugins)
 
-### ngrok
-```
-  $ http-server --proxy http://localhost:8080
-  $ twilio phone-numbers:update +12107574383 --sms-url=https://localhost:8080
-
-```
