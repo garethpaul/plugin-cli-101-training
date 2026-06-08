@@ -45,3 +45,6 @@ hide account, messaging, webhook, or phone-number changes.
 - Hidden account mutations
 - Broad plugin rewrites without workshop notes
 - Generated README churn unrelated to command behavior
+
+This list is a roadmap guardrail, not a permanent rule.
+Strong user demand and strong technical rationale can change it.
