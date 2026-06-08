@@ -3,6 +3,9 @@
 
 # CLI 101 Training
 
+<!-- README-OVERVIEW-IMAGE -->
+![Project overview](docs/readme-overview.svg)
+
 This page should describe some of the contents for Twilio CLI 101. 
 
 ## Suggested Reading
@@ -26,7 +29,6 @@ npm install twilio-cli -g
 
 ### Login / Auth
 
-
 ```
 twilio login
 ```
@@ -40,7 +42,6 @@ export TWILIO_ACCOUNT_SID="";
 export TWILIO_API_KEY="";
 export TWILIO_API_SECRET="";
 ```
-
 
 ### Commands
 
@@ -63,7 +64,6 @@ twilio plugins:install @garethpaul/plugin-cli-101-training
 ```
 twilio plugins:install @twilio-labs/plugin-watch
 ```
-
 
 ## Tips
 
