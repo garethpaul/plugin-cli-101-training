@@ -84,4 +84,4 @@ Keep changes small and tied to the project that is already present in this repos
 
 Prior README summary:
 
-> @garethpaul/cli-101-training ======================== CLI 101 Training <!-- README-OVERVIEW-IMAGE --> This page should describe some of the contents for Twilio CLI 101. Suggested Reading * [CLI Docs](https://www.twilio.com/docs/twilio-cli) * [CLI Plugin Docs](https://www.twilio.com/docs/twilio-cli/plugins)
+> @garethpaul/cli-101-training ======================== CLI 101 Training This page should describe some of the contents for Twilio CLI 101. Suggested Reading * [CLI Docs](https://www.twilio.com/docs/twilio-cli) * [CLI Plugin Docs](https://www.twilio.com/docs/twilio-cli/plugins)
