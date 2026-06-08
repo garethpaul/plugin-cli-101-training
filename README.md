@@ -1,5 +1,8 @@
 # plugin-cli-101-training
 
+<!-- README-OVERVIEW-IMAGE -->
+![Project overview](docs/readme-overview.svg)
+
 ## Overview
 
 `garethpaul/plugin-cli-101-training` is a Node.js or JavaScript project. Twilio CLI 101 Training
@@ -82,4 +85,3 @@ Keep changes small and tied to the project that is already present in this repos
 Prior README summary:
 
 > @garethpaul/cli-101-training ======================== CLI 101 Training <!-- README-OVERVIEW-IMAGE --> This page should describe some of the contents for Twilio CLI 101. Suggested Reading * [CLI Docs](https://www.twilio.com/docs/twilio-cli) * [CLI Plugin Docs](https://www.twilio.com/docs/twilio-cli/plugins)
-
