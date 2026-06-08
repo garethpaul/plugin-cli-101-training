@@ -79,9 +79,3 @@ When the required SDK or runtime is unavailable, use static checks and source re
 ## Contributing
 
 Keep changes small and tied to the project that is already present in this repository. For code changes, document the toolchain used, avoid committing generated dependency directories or local configuration, and update this README when setup or verification steps change.
-
-## Existing Project Notes
-
-Prior README summary:
-
-> @garethpaul/cli-101-training ======================== CLI 101 Training This page should describe some of the contents for Twilio CLI 101. Suggested Reading * [CLI Docs](https://www.twilio.com/docs/twilio-cli) * [CLI Plugin Docs](https://www.twilio.com/docs/twilio-cli/plugins)
