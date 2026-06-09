@@ -53,6 +53,8 @@ sanitized before terminal output.
 Keep `bin/run` as the executable launcher and avoid permission churn in
 packaging files, because broken launcher metadata can change how learners run
 the training plugin.
+Keep packaged launcher files included in `package.json` so published installs
+match the reviewed local launcher behavior.
 
 ## Dependency and Supply Chain Security
 

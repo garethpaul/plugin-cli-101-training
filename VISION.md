@@ -26,6 +26,7 @@ Priority:
 - Keep learner names sanitized before terminal output
 - Keep the frozen example catalog limited to reviewed fake placeholders
 - Keep `bin/run` as the executable launcher for Unix installs
+- Keep packaged launcher files included for npm publishes
 - Maintain oclif packaging metadata for Twilio CLI plugin installation
 
 Next priorities:

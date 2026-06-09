@@ -19,3 +19,4 @@
   terminal.
 - Froze the fake placeholder example catalog to keep training commands stable.
 - Added a static check that preserves the executable launcher mode on `bin/run`.
+- Included packaged launcher files in the npm package file list.

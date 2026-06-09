@@ -68,6 +68,7 @@ The setup commands above are derived from repository files. Legacy mobile, Pytho
   and caps displayed names before echoing them.
 - Keep `bin/run` as the executable launcher for Unix installs; `bin/run.cmd`
   remains the non-executable Windows wrapper.
+- Packaged launcher files stay included through the package `files` list.
 
 Detected npm scripts:
 
@@ -114,6 +115,7 @@ When the required SDK or runtime is unavailable, use static checks and source re
   scripts, or Twilio credential handling.
 - Keep the executable launcher mode on `bin/run` intact when editing packaging
   files.
+- Keep packaged launcher files included when editing `package.json`.
 - See `CHANGES.md` and
   `docs/plans/` for the current safe-training baseline.
 - See `SECURITY.md` for vulnerability reporting and safe research guidance.

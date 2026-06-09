@@ -11,6 +11,7 @@ const CHECK_PLAN = 'docs/plans/2026-06-08-plugin-cli-101-training-check-wrapper.
 const WELCOME_PLAN = 'docs/plans/2026-06-09-plugin-cli-101-training-welcome-name-normalization.md';
 const FROZEN_EXAMPLES_PLAN = 'docs/plans/2026-06-09-plugin-cli-101-training-frozen-examples.md';
 const BIN_MODE_PLAN = 'docs/plans/2026-06-09-plugin-cli-101-training-bin-run-mode.md';
+const PACKAGE_FILES_PLAN = 'docs/plans/2026-06-09-plugin-cli-101-training-package-files.md';
 const REQUIRED = [
   '.gitignore',
   'CHANGES.md',
@@ -29,6 +30,7 @@ const REQUIRED = [
   WELCOME_PLAN,
   FROZEN_EXAMPLES_PLAN,
   BIN_MODE_PLAN,
+  PACKAGE_FILES_PLAN,
   'scripts/check-baseline.js',
   'src/commands/cli-101-training/examples.js',
   'src/commands/cli-101-training/feedback.js',
@@ -68,6 +70,9 @@ function main() {
   }
   if (pkg.scripts.posttest) {
     failures.push('posttest should not run npm audit without a committed lockfile');
+  }
+  if (!Array.isArray(pkg.files) || !pkg.files.includes('/bin')) {
+    failures.push('package.json files must include /bin so launchers are published');
   }
 
   if (!isExecutable('bin/run')) {
@@ -177,7 +182,8 @@ function main() {
     '--copy',
     'learner names',
     'frozen example catalog',
-    'executable launcher'
+    'executable launcher',
+    'packaged launcher files'
   ]) {
     if (!docs.toLowerCase().includes(phrase.toLowerCase())) {
       failures.push(`docs must mention ${phrase}`);
@@ -221,6 +227,13 @@ function main() {
   for (const phrase of ['status: completed', 'bin/run', 'executable', 'npm run check']) {
     if (!binModePlan.includes(phrase)) {
       failures.push(`bin mode plan must mention ${phrase}`);
+    }
+  }
+
+  const packageFilesPlan = read(PACKAGE_FILES_PLAN);
+  for (const phrase of ['status: completed', '/bin', 'package.json', 'npm run check']) {
+    if (!packageFilesPlan.includes(phrase)) {
+      failures.push(`package files plan must mention ${phrase}`);
     }
   }
 
