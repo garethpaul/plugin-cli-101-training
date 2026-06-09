@@ -2,6 +2,14 @@ const { Command } = require('@oclif/command');
 const chalk = require('chalk');
 const inquirer = require('inquirer');
 
+const LEARNER_NAME_MAX_LENGTH = 80;
+
+function formatLearnerName(value) {
+  const rawName = value === undefined || value === null ? '' : String(value);
+  const name = rawName.replace(/[\x00-\x1F\x7F]/g, '').trim();
+  return (name || 'there').slice(0, LEARNER_NAME_MAX_LENGTH);
+}
+
 class Welcome extends Command {
   async run() {
     const welcome = chalk.bold('>>>>>  ') +
@@ -28,10 +36,11 @@ class Welcome extends Command {
       type: 'input'
     }]);
 
-    this.log(`Hello ${chalk.bold(responses.name)}! Thanks for taking 101 training today.`);
+    this.log(`Hello ${chalk.bold(formatLearnerName(responses.name))}! Thanks for taking 101 training today.`);
   }
 }
 
 Welcome.description = 'Welcome to Twilio 101 Training';
 
 module.exports = Welcome;
+module.exports.formatLearnerName = formatLearnerName;

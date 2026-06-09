@@ -62,6 +62,8 @@ The setup commands above are derived from repository files. Legacy mobile, Pytho
   example command.
 - Add `--copy` only after reviewing the command and deciding to place it on the
   local clipboard.
+- The welcome command trims learner names, strips terminal control characters,
+  and caps displayed names before echoing them.
 
 Detected npm scripts:
 
@@ -98,6 +100,8 @@ When the required SDK or runtime is unavailable, use static checks and source re
   examples for phone-number workflows.
 - Clipboard writes are opt-in through `--copy`; the default examples command
   prints without changing the local clipboard.
+- Learner names entered at the welcome prompt should stay display-only and
+  sanitized before terminal output.
 
 ## Maintenance Notes
 

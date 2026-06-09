@@ -15,3 +15,5 @@
 - Added docs and checks that make side effects, placeholders, and clipboard
   behavior explicit.
 - Made example-command clipboard writes opt-in with `--copy`.
+- Sanitized learner names before the welcome command echoes them to the
+  terminal.

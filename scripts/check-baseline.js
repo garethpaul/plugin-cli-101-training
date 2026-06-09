@@ -8,6 +8,7 @@ const ROOT = path.resolve(__dirname, '..');
 const PLAN = 'docs/plans/2026-06-08-plugin-cli-101-training-baseline.md';
 const CLIPBOARD_PLAN = 'docs/plans/2026-06-08-plugin-cli-101-training-clipboard-opt-in.md';
 const CHECK_PLAN = 'docs/plans/2026-06-08-plugin-cli-101-training-check-wrapper.md';
+const WELCOME_PLAN = 'docs/plans/2026-06-09-plugin-cli-101-training-welcome-name-normalization.md';
 const REQUIRED = [
   '.gitignore',
   'CHANGES.md',
@@ -23,6 +24,7 @@ const REQUIRED = [
   PLAN,
   CLIPBOARD_PLAN,
   CHECK_PLAN,
+  WELCOME_PLAN,
   'scripts/check-baseline.js',
   'src/commands/cli-101-training/examples.js',
   'src/commands/cli-101-training/feedback.js',
@@ -123,6 +125,18 @@ function main() {
     }
   }
 
+  const welcome = read('src/commands/cli-101-training/welcome.js');
+  for (const phrase of [
+    'function formatLearnerName',
+    'LEARNER_NAME_MAX_LENGTH = 80',
+    'replace(/[\\x00-\\x1F\\x7F]/g, \'\')',
+    'module.exports.formatLearnerName'
+  ]) {
+    if (!welcome.includes(phrase)) {
+      failures.push(`welcome.js must include ${phrase}`);
+    }
+  }
+
   const appveyor = read('appveyor.yml');
   if (!appveyor.includes('nodejs_version: "10"')) {
     failures.push('appveyor.yml must use the package-supported Node 10 baseline');
@@ -144,7 +158,8 @@ function main() {
     'no phone-number purchases',
     'Twilio credentials',
     'Review before running',
-    '--copy'
+    '--copy',
+    'learner names'
   ]) {
     if (!docs.toLowerCase().includes(phrase.toLowerCase())) {
       failures.push(`docs must mention ${phrase}`);
@@ -167,6 +182,13 @@ function main() {
   for (const phrase of ['status: completed', 'make check', 'npm test']) {
     if (!checkPlan.includes(phrase)) {
       failures.push(`check wrapper plan must mention ${phrase}`);
+    }
+  }
+
+  const welcomePlan = read(WELCOME_PLAN);
+  for (const phrase of ['status: completed', 'formatLearnerName', 'npm run check']) {
+    if (!welcomePlan.includes(phrase)) {
+      failures.push(`welcome plan must mention ${phrase}`);
     }
   }
 

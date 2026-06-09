@@ -45,6 +45,9 @@ before running copied examples with live Twilio credentials.
 Clipboard writes should remain opt-in through `--copy` so learners can review
 example commands before changing their local clipboard.
 
+Learner names entered at prompts should be treated as display-only input and
+sanitized before terminal output.
+
 ## Dependency and Supply Chain Security
 
 Dependency updates should come from trusted package managers and should keep lockfiles in sync when lockfiles exist. Do not commit credentials, private keys, tokens, generated secrets, or machine-local configuration. If a vulnerability depends on a compromised package, typosquatting risk, insecure transitive dependency, or unsafe build step, include the package name, affected version, and the path through which it is used.
