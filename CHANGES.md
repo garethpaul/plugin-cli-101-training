@@ -2,6 +2,8 @@
 
 ## 2026-06-09
 
+- Added stable `make lint`, `make build`, `npm run lint`, and `npm run build`
+  aliases for the static training baseline.
 - Froze the derived example choice list so prompt options stay aligned with the
   reviewed command catalog.
 

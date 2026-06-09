@@ -55,7 +55,8 @@ The setup commands above are derived from repository files. Legacy mobile, Pytho
 
 ## Running or Using the Project
 
-- Run `make check` before changing commands or examples.
+- Run `make check`, `make lint`, or `make build` before changing commands or
+  examples.
 - Use `./bin/run cli-101-training:welcome` to launch the welcome command after
   dependencies are installed.
 - Use `./bin/run cli-101-training:examples --example sms` to print a specific
@@ -73,16 +74,22 @@ The setup commands above are derived from repository files. Legacy mobile, Pytho
 
 Detected npm scripts:
 
+- `npm run build` - `npm run check`
 - `npm run postpack` - `rm -f oclif.manifest.json`
 - `npm run prepack` - `oclif-dev manifest && oclif-dev readme`
 - `npm run check` - `node scripts/check-baseline.js`
+- `npm run lint` - `npm run check`
 - `npm run test` - `npm run check`
 - `npm run version` - `oclif-dev readme && git add README.md`
 
 ## Testing and Verification
 
 - `make check`
+- `make lint`
+- `make build`
 - `npm run check`
+- `npm run lint`
+- `npm run build`
 - `npm test`
 - `node scripts/check-baseline.js`
 
@@ -113,8 +120,9 @@ When the required SDK or runtime is unavailable, use static checks and source re
 
 ## Maintenance Notes
 
-- Run `npm run check` before changing examples, command prompts, package
-  scripts, or Twilio credential handling.
+- Run `npm run check`, `npm run lint`, `npm run build`, `make lint`,
+  `make build`, and `make check` before changing examples, command prompts,
+  package scripts, or Twilio credential handling.
 - Keep the executable launcher mode on `bin/run` intact when editing packaging
   files.
 - Keep packaged launcher files included when editing `package.json`.

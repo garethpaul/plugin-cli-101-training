@@ -10,9 +10,10 @@ links in one place.
 The goal is to keep the plugin small, teachable, and safe for learners who are
 copying commands into their own Twilio environments.
 
-Current baseline: `npm run check` verifies the training command guardrails,
-fake placeholder examples, package scripts, and docs without requiring Twilio
-credentials or a live account.
+Current baseline: `npm run check`, `npm run lint`, `npm run build`, and
+`make check` verify the training command guardrails, fake placeholder examples,
+package scripts, and docs without requiring Twilio credentials or a live
+account.
 
 The current focus is:
 
@@ -28,6 +29,8 @@ Priority:
 - Keep frozen example choices derived from the reviewed catalog
 - Keep `bin/run` as the executable launcher for Unix installs
 - Keep packaged launcher files included for npm publishes
+- Keep `make lint`, `make build`, `npm run lint`, and `npm run build` available
+  as stable static gate aliases
 - Maintain oclif packaging metadata for Twilio CLI plugin installation
 
 Next priorities:
@@ -46,7 +49,8 @@ Contribution rules:
 - Keep command examples explicit about the environment they affect.
 - Keep examples on fake placeholder values and no phone-number purchases.
 - Keep clipboard copy behind an explicit flag.
-- Keep `npm run check` passing when command behavior changes.
+- Keep `npm run check`, `npm run lint`, `npm run build`, and `make check`
+  passing when command behavior changes.
 - Update README output when command behavior changes.
 
 ## Security And Responsible Use

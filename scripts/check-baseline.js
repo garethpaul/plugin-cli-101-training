@@ -13,6 +13,7 @@ const FROZEN_EXAMPLES_PLAN = 'docs/plans/2026-06-09-plugin-cli-101-training-froz
 const BIN_MODE_PLAN = 'docs/plans/2026-06-09-plugin-cli-101-training-bin-run-mode.md';
 const PACKAGE_FILES_PLAN = 'docs/plans/2026-06-09-plugin-cli-101-training-package-files.md';
 const FROZEN_CHOICES_PLAN = 'docs/plans/2026-06-09-plugin-cli-101-training-frozen-example-choices.md';
+const GATE_ALIASES_PLAN = 'docs/plans/2026-06-09-plugin-cli-101-training-gate-aliases.md';
 const REQUIRED = [
   '.gitignore',
   'CHANGES.md',
@@ -33,6 +34,7 @@ const REQUIRED = [
   BIN_MODE_PLAN,
   PACKAGE_FILES_PLAN,
   FROZEN_CHOICES_PLAN,
+  GATE_ALIASES_PLAN,
   'scripts/check-baseline.js',
   'src/commands/cli-101-training/examples.js',
   'src/commands/cli-101-training/feedback.js',
@@ -69,6 +71,12 @@ function main() {
   }
   if (pkg.scripts.test !== 'npm run check') {
     failures.push('npm test must run the static baseline');
+  }
+  if (pkg.scripts.lint !== 'npm run check') {
+    failures.push('npm run lint must run the static baseline');
+  }
+  if (pkg.scripts.build !== 'npm run check') {
+    failures.push('npm run build must run the static baseline');
   }
   if (pkg.scripts.posttest) {
     failures.push('posttest should not run npm audit without a committed lockfile');
@@ -177,7 +185,11 @@ function main() {
     .join('\n');
   for (const phrase of [
     'make check',
+    'make lint',
+    'make build',
     'npm run check',
+    'npm run lint',
+    'npm run build',
     'fake placeholder',
     'no phone-number purchases',
     'Twilio credentials',
@@ -248,9 +260,21 @@ function main() {
     }
   }
 
+  const gateAliasesPlan = read(GATE_ALIASES_PLAN);
+  for (const phrase of ['status: completed', 'make lint', 'make build', 'npm run lint', 'npm run build']) {
+    if (!gateAliasesPlan.includes(phrase)) {
+      failures.push(`gate aliases plan must mention ${phrase}`);
+    }
+  }
+
   const makefile = read('Makefile');
   if (!makefile.includes('check: verify')) {
     failures.push('Makefile must expose make check as the repository verification wrapper');
+  }
+  for (const phrase of ['lint:', 'build:', 'verify: lint test build']) {
+    if (!makefile.includes(phrase)) {
+      failures.push(`Makefile must include ${phrase}`);
+    }
   }
 
   const svg = read('docs/readme-overview.svg');
