@@ -25,6 +25,7 @@ Priority:
 - Keep clipboard writes opt-in after command review
 - Keep learner names sanitized before terminal output
 - Keep the frozen example catalog limited to reviewed fake placeholders
+- Keep `bin/run` as the executable launcher for Unix installs
 - Maintain oclif packaging metadata for Twilio CLI plugin installation
 
 Next priorities:

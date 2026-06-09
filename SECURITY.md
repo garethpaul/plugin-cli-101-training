@@ -50,6 +50,10 @@ The frozen example catalog should only contain reviewed fake placeholders.
 Learner names entered at prompts should be treated as display-only input and
 sanitized before terminal output.
 
+Keep `bin/run` as the executable launcher and avoid permission churn in
+packaging files, because broken launcher metadata can change how learners run
+the training plugin.
+
 ## Dependency and Supply Chain Security
 
 Dependency updates should come from trusted package managers and should keep lockfiles in sync when lockfiles exist. Do not commit credentials, private keys, tokens, generated secrets, or machine-local configuration. If a vulnerability depends on a compromised package, typosquatting risk, insecure transitive dependency, or unsafe build step, include the package name, affected version, and the path through which it is used.

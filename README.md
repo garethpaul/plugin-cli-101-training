@@ -66,6 +66,8 @@ The setup commands above are derived from repository files. Legacy mobile, Pytho
   runtime.
 - The welcome command trims learner names, strips terminal control characters,
   and caps displayed names before echoing them.
+- Keep `bin/run` as the executable launcher for Unix installs; `bin/run.cmd`
+  remains the non-executable Windows wrapper.
 
 Detected npm scripts:
 
@@ -110,6 +112,8 @@ When the required SDK or runtime is unavailable, use static checks and source re
 
 - Run `npm run check` before changing examples, command prompts, package
   scripts, or Twilio credential handling.
+- Keep the executable launcher mode on `bin/run` intact when editing packaging
+  files.
 - See `CHANGES.md` and
   `docs/plans/` for the current safe-training baseline.
 - See `SECURITY.md` for vulnerability reporting and safe research guidance.

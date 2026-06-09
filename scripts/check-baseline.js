@@ -10,6 +10,7 @@ const CLIPBOARD_PLAN = 'docs/plans/2026-06-08-plugin-cli-101-training-clipboard-
 const CHECK_PLAN = 'docs/plans/2026-06-08-plugin-cli-101-training-check-wrapper.md';
 const WELCOME_PLAN = 'docs/plans/2026-06-09-plugin-cli-101-training-welcome-name-normalization.md';
 const FROZEN_EXAMPLES_PLAN = 'docs/plans/2026-06-09-plugin-cli-101-training-frozen-examples.md';
+const BIN_MODE_PLAN = 'docs/plans/2026-06-09-plugin-cli-101-training-bin-run-mode.md';
 const REQUIRED = [
   '.gitignore',
   'CHANGES.md',
@@ -27,6 +28,7 @@ const REQUIRED = [
   CHECK_PLAN,
   WELCOME_PLAN,
   FROZEN_EXAMPLES_PLAN,
+  BIN_MODE_PLAN,
   'scripts/check-baseline.js',
   'src/commands/cli-101-training/examples.js',
   'src/commands/cli-101-training/feedback.js',
@@ -39,6 +41,10 @@ function read(relativePath) {
 
 function parseSource(relativePath) {
   return read(relativePath).replace(/^#![^\n]*\n/, '');
+}
+
+function isExecutable(relativePath) {
+  return Boolean(fs.statSync(path.join(ROOT, relativePath)).mode & 0o111);
 }
 
 function failIfMissing(failures) {
@@ -62,6 +68,13 @@ function main() {
   }
   if (pkg.scripts.posttest) {
     failures.push('posttest should not run npm audit without a committed lockfile');
+  }
+
+  if (!isExecutable('bin/run')) {
+    failures.push('bin/run must remain executable for Unix launcher installs');
+  }
+  if (isExecutable('bin/run.cmd')) {
+    failures.push('bin/run.cmd should not be marked executable');
   }
 
   for (const jsFile of [
@@ -163,7 +176,8 @@ function main() {
     'Review before running',
     '--copy',
     'learner names',
-    'frozen example catalog'
+    'frozen example catalog',
+    'executable launcher'
   ]) {
     if (!docs.toLowerCase().includes(phrase.toLowerCase())) {
       failures.push(`docs must mention ${phrase}`);
@@ -200,6 +214,13 @@ function main() {
   for (const phrase of ['status: completed', 'Object.freeze', 'npm run check']) {
     if (!frozenExamplesPlan.includes(phrase)) {
       failures.push(`frozen examples plan must mention ${phrase}`);
+    }
+  }
+
+  const binModePlan = read(BIN_MODE_PLAN);
+  for (const phrase of ['status: completed', 'bin/run', 'executable', 'npm run check']) {
+    if (!binModePlan.includes(phrase)) {
+      failures.push(`bin mode plan must mention ${phrase}`);
     }
   }
 
