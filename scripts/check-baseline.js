@@ -9,6 +9,7 @@ const PLAN = 'docs/plans/2026-06-08-plugin-cli-101-training-baseline.md';
 const CLIPBOARD_PLAN = 'docs/plans/2026-06-08-plugin-cli-101-training-clipboard-opt-in.md';
 const CHECK_PLAN = 'docs/plans/2026-06-08-plugin-cli-101-training-check-wrapper.md';
 const WELCOME_PLAN = 'docs/plans/2026-06-09-plugin-cli-101-training-welcome-name-normalization.md';
+const FROZEN_EXAMPLES_PLAN = 'docs/plans/2026-06-09-plugin-cli-101-training-frozen-examples.md';
 const REQUIRED = [
   '.gitignore',
   'CHANGES.md',
@@ -25,6 +26,7 @@ const REQUIRED = [
   CLIPBOARD_PLAN,
   CHECK_PLAN,
   WELCOME_PLAN,
+  FROZEN_EXAMPLES_PLAN,
   'scripts/check-baseline.js',
   'src/commands/cli-101-training/examples.js',
   'src/commands/cli-101-training/feedback.js',
@@ -86,6 +88,7 @@ function main() {
   const examples = read('src/commands/cli-101-training/examples.js');
   for (const phrase of [
     'EXAMPLE_COMMANDS',
+    'Object.freeze({',
     'example: flags.string',
     '+15555550100',
     '+15555550101',
@@ -159,7 +162,8 @@ function main() {
     'Twilio credentials',
     'Review before running',
     '--copy',
-    'learner names'
+    'learner names',
+    'frozen example catalog'
   ]) {
     if (!docs.toLowerCase().includes(phrase.toLowerCase())) {
       failures.push(`docs must mention ${phrase}`);
@@ -189,6 +193,13 @@ function main() {
   for (const phrase of ['status: completed', 'formatLearnerName', 'npm run check']) {
     if (!welcomePlan.includes(phrase)) {
       failures.push(`welcome plan must mention ${phrase}`);
+    }
+  }
+
+  const frozenExamplesPlan = read(FROZEN_EXAMPLES_PLAN);
+  for (const phrase of ['status: completed', 'Object.freeze', 'npm run check']) {
+    if (!frozenExamplesPlan.includes(phrase)) {
+      failures.push(`frozen examples plan must mention ${phrase}`);
     }
   }
 

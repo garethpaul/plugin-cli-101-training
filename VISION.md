@@ -24,6 +24,7 @@ Priority:
 - Keep phone-number workflows read-only unless side effects are explicit
 - Keep clipboard writes opt-in after command review
 - Keep learner names sanitized before terminal output
+- Keep the frozen example catalog limited to reviewed fake placeholders
 - Maintain oclif packaging metadata for Twilio CLI plugin installation
 
 Next priorities:

@@ -3,7 +3,7 @@ const chalk = require('chalk');
 const clipboardy = require('clipboardy');
 const inquirer = require('inquirer');
 
-const EXAMPLE_COMMANDS = {
+const EXAMPLE_COMMANDS = Object.freeze({
   sms: `twilio api:core:messages:create \\
   --to +15555550100 \\
   --from +15555550101 \\
@@ -18,7 +18,7 @@ const EXAMPLE_COMMANDS = {
   plugins: 'twilio plugins',
   'phone-numbers': 'twilio phone-numbers:search:local --country-code US --area-code 415',
   webhook: 'twilio phone-numbers:update <YOUR_TWILIO_NUMBER> --sms-url=https://example.com/twilio/sms'
-};
+});
 
 const EXAMPLE_CHOICES = Object.keys(EXAMPLE_COMMANDS);
 

@@ -17,3 +17,4 @@
 - Made example-command clipboard writes opt-in with `--copy`.
 - Sanitized learner names before the welcome command echoes them to the
   terminal.
+- Froze the fake placeholder example catalog to keep training commands stable.

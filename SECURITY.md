@@ -45,6 +45,8 @@ before running copied examples with live Twilio credentials.
 Clipboard writes should remain opt-in through `--copy` so learners can review
 example commands before changing their local clipboard.
 
+The frozen example catalog should only contain reviewed fake placeholders.
+
 Learner names entered at prompts should be treated as display-only input and
 sanitized before terminal output.
 
