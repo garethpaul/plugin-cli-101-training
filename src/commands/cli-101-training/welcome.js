@@ -3,10 +3,14 @@ const chalk = require('chalk');
 const inquirer = require('inquirer');
 
 const LEARNER_NAME_MAX_LENGTH = 80;
+const BIDI_CONTROL_RE = /[\u202A-\u202E\u2066-\u2069]/g;
 
 function formatLearnerName(value) {
   const rawName = value === undefined || value === null ? '' : String(value);
-  const name = rawName.replace(/[\x00-\x1F\x7F]/g, '').trim();
+  const name = rawName
+    .replace(/[\x00-\x1F\x7F]/g, '')
+    .replace(BIDI_CONTROL_RE, '')
+    .trim();
   return (name || 'there').slice(0, LEARNER_NAME_MAX_LENGTH);
 }
 

@@ -50,7 +50,9 @@ Frozen example choices should stay derived from the reviewed example catalog so
 prompt options do not drift at runtime.
 
 Learner names entered at prompts should be treated as display-only input and
-sanitized before terminal output.
+sanitized before terminal output. Strip terminal control characters and
+bidirectional formatting controls so prompt input cannot visually reorder
+console text.
 
 Keep `bin/run` as the executable launcher and avoid permission churn in
 packaging files, because broken launcher metadata can change how learners run

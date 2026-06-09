@@ -61,7 +61,7 @@
     "lint": "npm run check",
     "postpack": "rm -f oclif.manifest.json",
     "prepack": "oclif-dev manifest && oclif-dev readme",
-    "test": "npm run check",
+    "test": "npm run check && node test_welcome_name_format.js",
     "version": "oclif-dev readme && git add README.md"
   }
 }

@@ -67,7 +67,8 @@ The setup commands above are derived from repository files. Legacy mobile, Pytho
   runtime.
 - Frozen example choices keep prompt options aligned with the reviewed catalog.
 - The welcome command trims learner names, strips terminal control characters,
-  and caps displayed names before echoing them.
+  strips bidirectional formatting controls, and caps displayed names before
+  echoing them.
 - Keep `bin/run` as the executable launcher for Unix installs; `bin/run.cmd`
   remains the non-executable Windows wrapper.
 - Packaged launcher files stay included through the package `files` list.
@@ -92,6 +93,7 @@ Detected npm scripts:
 - `npm run build`
 - `npm test`
 - `node scripts/check-baseline.js`
+- `node test_welcome_name_format.js`
 
 When the required SDK or runtime is unavailable, use static checks and source review first, then verify on a machine that has the matching platform toolchain.
 
@@ -116,7 +118,8 @@ When the required SDK or runtime is unavailable, use static checks and source re
 - The frozen example catalog should stay limited to reviewed fake placeholders.
 - Frozen example choices should stay derived from the reviewed catalog.
 - Learner names entered at the welcome prompt should stay display-only and
-  sanitized before terminal output.
+  sanitized before terminal output, including bidirectional formatting controls
+  that could visually reorder console text.
 
 ## Maintenance Notes
 

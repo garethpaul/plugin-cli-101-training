@@ -6,6 +6,8 @@
   aliases for the static training baseline.
 - Froze the derived example choice list so prompt options stay aligned with the
   reviewed command catalog.
+- Stripped bidirectional formatting controls from displayed learner names and
+  added a dependency-free formatter test.
 
 ## 2026-06-08
 

@@ -14,6 +14,7 @@ const BIN_MODE_PLAN = 'docs/plans/2026-06-09-plugin-cli-101-training-bin-run-mod
 const PACKAGE_FILES_PLAN = 'docs/plans/2026-06-09-plugin-cli-101-training-package-files.md';
 const FROZEN_CHOICES_PLAN = 'docs/plans/2026-06-09-plugin-cli-101-training-frozen-example-choices.md';
 const GATE_ALIASES_PLAN = 'docs/plans/2026-06-09-plugin-cli-101-training-gate-aliases.md';
+const BIDI_NAME_PLAN = 'docs/plans/2026-06-09-plugin-cli-101-training-bidi-name-sanitization.md';
 const REQUIRED = [
   '.gitignore',
   'CHANGES.md',
@@ -35,10 +36,12 @@ const REQUIRED = [
   PACKAGE_FILES_PLAN,
   FROZEN_CHOICES_PLAN,
   GATE_ALIASES_PLAN,
+  BIDI_NAME_PLAN,
   'scripts/check-baseline.js',
   'src/commands/cli-101-training/examples.js',
   'src/commands/cli-101-training/feedback.js',
-  'src/commands/cli-101-training/welcome.js'
+  'src/commands/cli-101-training/welcome.js',
+  'test_welcome_name_format.js'
 ];
 
 function read(relativePath) {
@@ -69,8 +72,8 @@ function main() {
   if (pkg.scripts.check !== 'node scripts/check-baseline.js') {
     failures.push('package.json must expose npm run check');
   }
-  if (pkg.scripts.test !== 'npm run check') {
-    failures.push('npm test must run the static baseline');
+  if (pkg.scripts.test !== 'npm run check && node test_welcome_name_format.js') {
+    failures.push('npm test must run the static baseline and welcome-name tests');
   }
   if (pkg.scripts.lint !== 'npm run check') {
     failures.push('npm run lint must run the static baseline');
@@ -96,7 +99,8 @@ function main() {
     'scripts/check-baseline.js',
     'src/commands/cli-101-training/examples.js',
     'src/commands/cli-101-training/feedback.js',
-    'src/commands/cli-101-training/welcome.js'
+    'src/commands/cli-101-training/welcome.js',
+    'test_welcome_name_format.js'
   ]) {
     try {
       // eslint-disable-next-line no-new-func
@@ -161,7 +165,9 @@ function main() {
   for (const phrase of [
     'function formatLearnerName',
     'LEARNER_NAME_MAX_LENGTH = 80',
+    'BIDI_CONTROL_RE = /[\\u202A-\\u202E\\u2066-\\u2069]/g',
     'replace(/[\\x00-\\x1F\\x7F]/g, \'\')',
+    "replace(BIDI_CONTROL_RE, '')",
     'module.exports.formatLearnerName'
   ]) {
     if (!welcome.includes(phrase)) {
@@ -196,6 +202,8 @@ function main() {
     'Review before running',
     '--copy',
     'learner names',
+    'bidirectional formatting controls',
+    'node test_welcome_name_format.js',
     'frozen example catalog',
     'frozen example choices',
     'executable launcher',
@@ -264,6 +272,13 @@ function main() {
   for (const phrase of ['status: completed', 'make lint', 'make build', 'npm run lint', 'npm run build']) {
     if (!gateAliasesPlan.includes(phrase)) {
       failures.push(`gate aliases plan must mention ${phrase}`);
+    }
+  }
+
+  const bidiNamePlan = read(BIDI_NAME_PLAN);
+  for (const phrase of ['status: completed', 'formatLearnerName', 'bidi-control', 'test_welcome_name_format.js', 'npm test']) {
+    if (!bidiNamePlan.includes(phrase)) {
+      failures.push(`bidi name plan must mention ${phrase}`);
     }
   }
 

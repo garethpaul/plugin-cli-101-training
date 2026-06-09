@@ -25,6 +25,7 @@ Priority:
 - Keep phone-number workflows read-only unless side effects are explicit
 - Keep clipboard writes opt-in after command review
 - Keep learner names sanitized before terminal output
+- Strip bidirectional formatting controls from learner names before display
 - Keep the frozen example catalog limited to reviewed fake placeholders
 - Keep frozen example choices derived from the reviewed catalog
 - Keep `bin/run` as the executable launcher for Unix installs
