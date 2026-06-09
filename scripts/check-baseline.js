@@ -7,9 +7,11 @@ const path = require('path');
 const ROOT = path.resolve(__dirname, '..');
 const PLAN = 'docs/plans/2026-06-08-plugin-cli-101-training-baseline.md';
 const CLIPBOARD_PLAN = 'docs/plans/2026-06-08-plugin-cli-101-training-clipboard-opt-in.md';
+const CHECK_PLAN = 'docs/plans/2026-06-08-plugin-cli-101-training-check-wrapper.md';
 const REQUIRED = [
   '.gitignore',
   'CHANGES.md',
+  'Makefile',
   'README.md',
   'SECURITY.md',
   'VISION.md',
@@ -20,6 +22,7 @@ const REQUIRED = [
   'package.json',
   PLAN,
   CLIPBOARD_PLAN,
+  CHECK_PLAN,
   'scripts/check-baseline.js',
   'src/commands/cli-101-training/examples.js',
   'src/commands/cli-101-training/feedback.js',
@@ -135,6 +138,7 @@ function main() {
     .map(read)
     .join('\n');
   for (const phrase of [
+    'make check',
     'npm run check',
     'fake placeholder',
     'no phone-number purchases',
@@ -157,6 +161,18 @@ function main() {
     if (!clipboardPlan.includes(phrase)) {
       failures.push(`clipboard plan must mention ${phrase}`);
     }
+  }
+
+  const checkPlan = read(CHECK_PLAN);
+  for (const phrase of ['status: completed', 'make check', 'npm test']) {
+    if (!checkPlan.includes(phrase)) {
+      failures.push(`check wrapper plan must mention ${phrase}`);
+    }
+  }
+
+  const makefile = read('Makefile');
+  if (!makefile.includes('check: verify')) {
+    failures.push('Makefile must expose make check as the repository verification wrapper');
   }
 
   const svg = read('docs/readme-overview.svg');

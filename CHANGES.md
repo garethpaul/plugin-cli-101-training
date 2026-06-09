@@ -2,6 +2,7 @@
 
 ## 2026-06-08
 
+- Added a root `make check` wrapper for the static baseline.
 - Added `npm run check` and `npm test` static baseline verification.
 - Replaced real-looking Twilio phone-number examples with fake placeholder
   numbers.

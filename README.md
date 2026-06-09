@@ -19,6 +19,7 @@ This README is based on the checked-in source, manifests, scripts, and repositor
 
 - `.gitignore` - generated output, dependency, log, and environment ignores
 - `CHANGES.md` - baseline change log
+- `Makefile` - repository-level verification wrapper
 - `README.md` - project overview and local usage notes
 - `package.json` - JavaScript dependency and script metadata
 - `bin` - source or example code
@@ -32,7 +33,7 @@ Additional scan context:
 
 - Source directories: bin, src
 - Dependency and build manifests: package.json
-- Entry points or build surfaces: package.json
+- Entry points or build surfaces: package.json, Makefile
 - Test-looking files: no obvious test files detected
 
 ## Getting Started
@@ -54,7 +55,7 @@ The setup commands above are derived from repository files. Legacy mobile, Pytho
 
 ## Running or Using the Project
 
-- Run `npm run check` before changing commands or examples.
+- Run `make check` before changing commands or examples.
 - Use `./bin/run cli-101-training:welcome` to launch the welcome command after
   dependencies are installed.
 - Use `./bin/run cli-101-training:examples --example sms` to print a specific
@@ -72,6 +73,7 @@ Detected npm scripts:
 
 ## Testing and Verification
 
+- `make check`
 - `npm run check`
 - `npm test`
 - `node scripts/check-baseline.js`
