@@ -64,6 +64,7 @@ The setup commands above are derived from repository files. Legacy mobile, Pytho
   local clipboard.
 - The frozen example catalog keeps fake placeholder training commands stable at
   runtime.
+- Frozen example choices keep prompt options aligned with the reviewed catalog.
 - The welcome command trims learner names, strips terminal control characters,
   and caps displayed names before echoing them.
 - Keep `bin/run` as the executable launcher for Unix installs; `bin/run.cmd`
@@ -106,6 +107,7 @@ When the required SDK or runtime is unavailable, use static checks and source re
 - Clipboard writes are opt-in through `--copy`; the default examples command
   prints without changing the local clipboard.
 - The frozen example catalog should stay limited to reviewed fake placeholders.
+- Frozen example choices should stay derived from the reviewed catalog.
 - Learner names entered at the welcome prompt should stay display-only and
   sanitized before terminal output.
 

@@ -1,5 +1,10 @@
 # Changes
 
+## 2026-06-09
+
+- Froze the derived example choice list so prompt options stay aligned with the
+  reviewed command catalog.
+
 ## 2026-06-08
 
 - Added a root `make check` wrapper for the static baseline.

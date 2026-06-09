@@ -46,6 +46,8 @@ Clipboard writes should remain opt-in through `--copy` so learners can review
 example commands before changing their local clipboard.
 
 The frozen example catalog should only contain reviewed fake placeholders.
+Frozen example choices should stay derived from the reviewed example catalog so
+prompt options do not drift at runtime.
 
 Learner names entered at prompts should be treated as display-only input and
 sanitized before terminal output.

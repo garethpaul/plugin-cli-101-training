@@ -12,6 +12,7 @@ const WELCOME_PLAN = 'docs/plans/2026-06-09-plugin-cli-101-training-welcome-name
 const FROZEN_EXAMPLES_PLAN = 'docs/plans/2026-06-09-plugin-cli-101-training-frozen-examples.md';
 const BIN_MODE_PLAN = 'docs/plans/2026-06-09-plugin-cli-101-training-bin-run-mode.md';
 const PACKAGE_FILES_PLAN = 'docs/plans/2026-06-09-plugin-cli-101-training-package-files.md';
+const FROZEN_CHOICES_PLAN = 'docs/plans/2026-06-09-plugin-cli-101-training-frozen-example-choices.md';
 const REQUIRED = [
   '.gitignore',
   'CHANGES.md',
@@ -31,6 +32,7 @@ const REQUIRED = [
   FROZEN_EXAMPLES_PLAN,
   BIN_MODE_PLAN,
   PACKAGE_FILES_PLAN,
+  FROZEN_CHOICES_PLAN,
   'scripts/check-baseline.js',
   'src/commands/cli-101-training/examples.js',
   'src/commands/cli-101-training/feedback.js',
@@ -107,6 +109,7 @@ function main() {
   for (const phrase of [
     'EXAMPLE_COMMANDS',
     'Object.freeze({',
+    'const EXAMPLE_CHOICES = Object.freeze(Object.keys(EXAMPLE_COMMANDS));',
     'example: flags.string',
     '+15555550100',
     '+15555550101',
@@ -182,6 +185,7 @@ function main() {
     '--copy',
     'learner names',
     'frozen example catalog',
+    'frozen example choices',
     'executable launcher',
     'packaged launcher files'
   ]) {
@@ -234,6 +238,13 @@ function main() {
   for (const phrase of ['status: completed', '/bin', 'package.json', 'npm run check']) {
     if (!packageFilesPlan.includes(phrase)) {
       failures.push(`package files plan must mention ${phrase}`);
+    }
+  }
+
+  const frozenChoicesPlan = read(FROZEN_CHOICES_PLAN);
+  for (const phrase of ['status: completed', 'EXAMPLE_CHOICES', 'Object.freeze', 'npm run check']) {
+    if (!frozenChoicesPlan.includes(phrase)) {
+      failures.push(`frozen choices plan must mention ${phrase}`);
     }
   }
 

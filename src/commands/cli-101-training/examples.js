@@ -20,7 +20,7 @@ const EXAMPLE_COMMANDS = Object.freeze({
   webhook: 'twilio phone-numbers:update <YOUR_TWILIO_NUMBER> --sms-url=https://example.com/twilio/sms'
 });
 
-const EXAMPLE_CHOICES = Object.keys(EXAMPLE_COMMANDS);
+const EXAMPLE_CHOICES = Object.freeze(Object.keys(EXAMPLE_COMMANDS));
 
 class Examples extends Command {
   static flags = {
