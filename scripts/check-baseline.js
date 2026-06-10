@@ -16,7 +16,9 @@ const FROZEN_CHOICES_PLAN = 'docs/plans/2026-06-09-plugin-cli-101-training-froze
 const GATE_ALIASES_PLAN = 'docs/plans/2026-06-09-plugin-cli-101-training-gate-aliases.md';
 const BIDI_NAME_PLAN = 'docs/plans/2026-06-09-plugin-cli-101-training-bidi-name-sanitization.md';
 const EXAMPLE_LOOKUP_PLAN = 'docs/plans/2026-06-10-plugin-cli-101-training-example-lookup.md';
+const HOSTED_VALIDATION_PLAN = 'docs/plans/2026-06-10-hosted-node-validation.md';
 const REQUIRED = [
+  '.github/workflows/check.yml',
   '.gitignore',
   'CHANGES.md',
   'Makefile',
@@ -39,6 +41,7 @@ const REQUIRED = [
   GATE_ALIASES_PLAN,
   BIDI_NAME_PLAN,
   EXAMPLE_LOOKUP_PLAN,
+  HOSTED_VALIDATION_PLAN,
   'scripts/check-baseline.js',
   'src/commands/cli-101-training/examples.js',
   'src/commands/cli-101-training/feedback.js',
@@ -187,6 +190,22 @@ function main() {
   if (!appveyor.includes('nodejs_version: "10"')) {
     failures.push('appveyor.yml must use the package-supported Node 10 baseline');
   }
+
+  const workflow = read('.github/workflows/check.yml');
+  for (const phrase of [
+    'permissions:\n  contents: read',
+    'cancel-in-progress: true',
+    'runs-on: ubuntu-24.04',
+    'timeout-minutes: 10',
+    'actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10',
+    'actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e',
+    'node-version: [18, 22]',
+    'run: npm test'
+  ]) {
+    if (!workflow.includes(phrase)) {
+      failures.push(`Check workflow must keep ${phrase}`);
+    }
+  }
   const forbiddenCi = ['Invoke-' + 'WebRequest', 'codecov' + '.io', 'bash ' + 'codecov.sh'];
   for (const forbidden of forbiddenCi) {
     if (appveyor.includes(forbidden)) {
@@ -217,7 +236,8 @@ function main() {
     'frozen example choices',
     'unknown example keys',
     'executable launcher',
-    'packaged launcher files'
+    'packaged launcher files',
+    'hosted Linux'
   ]) {
     if (!docs.toLowerCase().includes(phrase.toLowerCase())) {
       failures.push(`docs must mention ${phrase}`);
@@ -296,6 +316,13 @@ function main() {
   for (const phrase of ['status: completed', 'getExampleCommand', 'unknown example keys', 'test_examples_catalog.js', 'npm test']) {
     if (!exampleLookupPlan.includes(phrase)) {
       failures.push(`example lookup plan must mention ${phrase}`);
+    }
+  }
+
+  const hostedValidationPlan = read(HOSTED_VALIDATION_PLAN);
+  for (const phrase of ['status: completed', 'Node 18', 'Node 22', 'npm test']) {
+    if (!hostedValidationPlan.includes(phrase)) {
+      failures.push(`hosted validation plan must mention ${phrase}`);
     }
   }
 

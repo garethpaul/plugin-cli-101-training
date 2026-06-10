@@ -1,5 +1,10 @@
 # Changes
 
+## 2026-06-10
+
+- Added pinned, read-only hosted Linux validation on Node 18 and Node 22 for
+  the dependency-free CLI training baseline.
+
 ## 2026-06-09
 
 - Added stable `make lint`, `make build`, `npm run lint`, and `npm run build`

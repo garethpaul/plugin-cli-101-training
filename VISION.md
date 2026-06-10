@@ -19,6 +19,9 @@ The current focus is:
 
 Priority:
 
+- Keep the dependency-free baseline running on pinned hosted Linux with Node 18
+  and Node 22
+
 - Preserve the `cli-101-training` command namespace
 - Keep workshop examples easy to read and copy
 - Avoid embedding real phone numbers, account identifiers, or credentials

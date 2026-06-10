@@ -63,6 +63,10 @@ match the reviewed local launcher behavior.
 
 ## Dependency and Supply Chain Security
 
+Pinned, read-only hosted Linux validation runs only the dependency-free static
+and focused behavior tests. It does not resolve the unlocked legacy dependency
+graph or use Twilio credentials.
+
 Dependency updates should come from trusted package managers and should keep lockfiles in sync when lockfiles exist. Do not commit credentials, private keys, tokens, generated secrets, or machine-local configuration. If a vulnerability depends on a compromised package, typosquatting risk, insecure transitive dependency, or unsafe build step, include the package name, affected version, and the path through which it is used.
 
 Run `npm run check`, `npm run lint`, `npm run build`, `make lint`,
