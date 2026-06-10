@@ -16,6 +16,7 @@ const FROZEN_CHOICES_PLAN = 'docs/plans/2026-06-09-plugin-cli-101-training-froze
 const GATE_ALIASES_PLAN = 'docs/plans/2026-06-09-plugin-cli-101-training-gate-aliases.md';
 const BIDI_NAME_PLAN = 'docs/plans/2026-06-09-plugin-cli-101-training-bidi-name-sanitization.md';
 const EXAMPLE_LOOKUP_PLAN = 'docs/plans/2026-06-10-plugin-cli-101-training-example-lookup.md';
+const CLIPBOARD_FAILURE_PLAN = 'docs/plans/2026-06-10-plugin-cli-101-training-clipboard-failures.md';
 const HOSTED_VALIDATION_PLAN = 'docs/plans/2026-06-10-hosted-node-validation.md';
 const REQUIRED = [
   '.github/workflows/check.yml',
@@ -41,6 +42,7 @@ const REQUIRED = [
   GATE_ALIASES_PLAN,
   BIDI_NAME_PLAN,
   EXAMPLE_LOOKUP_PLAN,
+  CLIPBOARD_FAILURE_PLAN,
   HOSTED_VALIDATION_PLAN,
   'scripts/check-baseline.js',
   'src/commands/cli-101-training/examples.js',
@@ -142,7 +144,8 @@ function main() {
     'copy: flags.boolean',
     'flags.copy',
     'Re-run with --copy',
-    'clipboardy.writeSync'
+    'clipboardy.writeSync',
+    'Clipboard copy skipped: clipboard unavailable.'
   ]) {
     if (!examples.includes(phrase)) {
       failures.push(`examples.js must include ${phrase}`);
@@ -235,6 +238,7 @@ function main() {
     'frozen example catalog',
     'frozen example choices',
     'unknown example keys',
+    'clipboard failure details',
     'executable launcher',
     'packaged launcher files',
     'hosted Linux'
@@ -316,6 +320,13 @@ function main() {
   for (const phrase of ['status: completed', 'getExampleCommand', 'unknown example keys', 'test_examples_catalog.js', 'npm test']) {
     if (!exampleLookupPlan.includes(phrase)) {
       failures.push(`example lookup plan must mention ${phrase}`);
+    }
+  }
+
+  const clipboardFailurePlan = read(CLIPBOARD_FAILURE_PLAN);
+  for (const phrase of ['status: completed', 'clipboard unavailable', 'test_examples_catalog.js', 'npm test']) {
+    if (!clipboardFailurePlan.includes(phrase)) {
+      failures.push(`clipboard failure plan must mention ${phrase}`);
     }
   }
 

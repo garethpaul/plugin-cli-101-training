@@ -69,8 +69,8 @@ class Examples extends Command {
       try {
         clipboardy.writeSync(command);
         this.log('Copied the example command to the clipboard.');
-      } catch (error) {
-        this.log(`Clipboard copy skipped: ${error.message}`);
+      } catch {
+        this.log('Clipboard copy skipped: clipboard unavailable.');
       }
     } else {
       this.log('Clipboard copy skipped. Re-run with --copy after reviewing the command.');

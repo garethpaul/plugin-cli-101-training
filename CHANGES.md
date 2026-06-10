@@ -31,6 +31,8 @@
 - Added docs and checks that make side effects, placeholders, and clipboard
   behavior explicit.
 - Made example-command clipboard writes opt-in with `--copy`.
+- Replaced raw clipboard failure details with a stable terminal message and
+  direct command coverage.
 - Sanitized learner names before the welcome command echoes them to the
   terminal.
 - Froze the fake placeholder example catalog to keep training commands stable.

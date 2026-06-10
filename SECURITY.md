@@ -44,6 +44,8 @@ before running copied examples with live Twilio credentials.
 
 Clipboard writes should remain opt-in through `--copy` so learners can review
 example commands before changing their local clipboard.
+Clipboard failure details should not be echoed because provider errors can
+contain machine-specific paths or terminal control text.
 
 The frozen example catalog should only contain reviewed fake placeholders.
 Frozen example choices should stay derived from the reviewed example catalog so

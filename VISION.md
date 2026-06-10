@@ -27,6 +27,7 @@ Priority:
 - Avoid embedding real phone numbers, account identifiers, or credentials
 - Keep phone-number workflows read-only unless side effects are explicit
 - Keep clipboard writes opt-in after command review
+- Keep clipboard failure details out of learner-facing terminal output
 - Keep learner names sanitized before terminal output
 - Strip bidirectional formatting controls from learner names before display
 - Keep the frozen example catalog limited to reviewed fake placeholders
@@ -40,7 +41,7 @@ Priority:
 
 Next priorities:
 
-- Add tests for command prompts, flags, and clipboard output
+- Add tests for command prompts and flag combinations
 - Add direct tests for learner-name formatting once a test harness is restored
 - Add more direct tests for example catalog lookup and prompt behavior
 - Document supported Node and Twilio CLI versions

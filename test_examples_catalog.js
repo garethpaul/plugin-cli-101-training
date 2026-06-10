@@ -8,7 +8,7 @@ const vm = require('vm');
 
 const EXAMPLES = path.join(__dirname, 'src/commands/cli-101-training/examples.js');
 
-function loadExamplesCommand() {
+function loadExamplesCommand(overrides = {}) {
   const source = fs.readFileSync(EXAMPLES, 'utf8');
   const module = { exports: {} };
   const sandbox = {
@@ -33,7 +33,7 @@ function loadExamplesCommand() {
         return { bold: value => String(value) };
       }
       if (name === 'clipboardy') {
-        return { writeSync() {} };
+        return overrides.clipboardy || { writeSync() {} };
       }
       if (name === 'inquirer') {
         return { prompt: async () => ({ example: 'sms' }) };
@@ -46,10 +46,35 @@ function loadExamplesCommand() {
   return module.exports;
 }
 
-const { getExampleCommand } = loadExamplesCommand();
+async function main() {
+  const { getExampleCommand } = loadExamplesCommand();
 
-assert.strictEqual(getExampleCommand('__missing__'), null);
-assert.ok(getExampleCommand('sms').includes('+15555550100'));
-assert.ok(getExampleCommand('webhook').includes('<YOUR_TWILIO_NUMBER>'));
+  assert.strictEqual(getExampleCommand('__missing__'), null);
+  assert.ok(getExampleCommand('sms').includes('+15555550100'));
+  assert.ok(getExampleCommand('webhook').includes('<YOUR_TWILIO_NUMBER>'));
 
-console.log('example catalog lookup tests passed.');
+  const sensitiveDetail = '/Users/learner/private/clipboard.sock';
+  const Examples = loadExamplesCommand({
+    clipboardy: {
+      writeSync() {
+        throw new Error(sensitiveDetail);
+      }
+    }
+  });
+  const command = new Examples();
+  const output = [];
+  command.parse = () => ({ flags: { copy: true, example: 'sms' } });
+  command.log = value => output.push(String(value));
+
+  await command.run();
+
+  assert.ok(output.includes('Clipboard copy skipped: clipboard unavailable.'));
+  assert.ok(!output.join('\n').includes(sensitiveDetail));
+
+  console.log('example catalog lookup tests passed.');
+}
+
+main().catch(error => {
+  console.error(error);
+  process.exitCode = 1;
+});
