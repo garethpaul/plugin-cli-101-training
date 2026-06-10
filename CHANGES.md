@@ -8,6 +8,8 @@
   reviewed command catalog.
 - Stripped bidirectional formatting controls from displayed learner names and
   added a dependency-free formatter test.
+- Added a dependency-free example catalog lookup test and guard for unknown
+  example keys.
 
 ## 2026-06-08
 

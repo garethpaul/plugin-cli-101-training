@@ -22,6 +22,13 @@ const EXAMPLE_COMMANDS = Object.freeze({
 
 const EXAMPLE_CHOICES = Object.freeze(Object.keys(EXAMPLE_COMMANDS));
 
+function getExampleCommand(example) {
+  if (!Object.prototype.hasOwnProperty.call(EXAMPLE_COMMANDS, example)) {
+    return null;
+  }
+  return EXAMPLE_COMMANDS[example];
+}
+
 class Examples extends Command {
   static flags = {
     example: flags.string({
@@ -48,7 +55,12 @@ class Examples extends Command {
       example = responses.example;
     }
 
-    const command = EXAMPLE_COMMANDS[example];
+    const command = getExampleCommand(example);
+    if (!command) {
+      this.error(`Unknown training example: ${example}`, { exit: 2 });
+      return;
+    }
+
     this.log(`Here is an example command for ${chalk.bold(example)}:`);
     this.log(command);
     this.log('Review before running: phone numbers and URLs are placeholders.');
@@ -69,3 +81,4 @@ class Examples extends Command {
 Examples.description = 'Twilio 101 training examples';
 
 module.exports = Examples;
+module.exports.getExampleCommand = getExampleCommand;

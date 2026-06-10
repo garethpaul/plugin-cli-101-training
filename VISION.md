@@ -28,6 +28,7 @@ Priority:
 - Strip bidirectional formatting controls from learner names before display
 - Keep the frozen example catalog limited to reviewed fake placeholders
 - Keep frozen example choices derived from the reviewed catalog
+- Keep unknown example keys from resolving to command output
 - Keep `bin/run` as the executable launcher for Unix installs
 - Keep packaged launcher files included for npm publishes
 - Keep `make lint`, `make build`, `npm run lint`, and `npm run build` available
@@ -38,6 +39,7 @@ Next priorities:
 
 - Add tests for command prompts, flags, and clipboard output
 - Add direct tests for learner-name formatting once a test harness is restored
+- Add more direct tests for example catalog lookup and prompt behavior
 - Document supported Node and Twilio CLI versions
 - Remove unused imports and stale generated README sections
 - Revisit lint and audit scripts once a lockfile and dependency baseline are

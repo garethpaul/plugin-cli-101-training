@@ -66,6 +66,7 @@ The setup commands above are derived from repository files. Legacy mobile, Pytho
 - The frozen example catalog keeps fake placeholder training commands stable at
   runtime.
 - Frozen example choices keep prompt options aligned with the reviewed catalog.
+- Unknown example keys fail before any command text is printed or copied.
 - The welcome command trims learner names, strips terminal control characters,
   strips bidirectional formatting controls, and caps displayed names before
   echoing them.
@@ -94,6 +95,7 @@ Detected npm scripts:
 - `npm test`
 - `node scripts/check-baseline.js`
 - `node test_welcome_name_format.js`
+- `node test_examples_catalog.js`
 
 When the required SDK or runtime is unavailable, use static checks and source review first, then verify on a machine that has the matching platform toolchain.
 
