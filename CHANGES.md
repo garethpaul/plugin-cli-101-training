@@ -15,6 +15,7 @@
   reduced the production dependency audit to zero findings.
 - Added locked installs, production auditing, and package dry runs to hosted CI.
 - Made post-package manifest cleanup portable across hosted Linux and Windows.
+- Made baseline file reads CRLF-neutral and kept Unix mode checks on Unix hosts.
 
 ## 2026-06-09
 

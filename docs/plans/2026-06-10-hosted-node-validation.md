@@ -27,6 +27,8 @@ run. Preserve launcher modes, package files, example immutability, unknown-key
 handling, and learner-name sanitization checks.
 Use Node-based post-package cleanup so package validation behaves the same on
 Linux and Windows shells.
+Normalize checkout line endings in static reads and leave Unix executable-mode
+assertions to the Linux lanes.
 
 ## Verification
 

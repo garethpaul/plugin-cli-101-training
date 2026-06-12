@@ -56,7 +56,7 @@ const REQUIRED = [
 ];
 
 function read(relativePath) {
-  return fs.readFileSync(path.join(ROOT, relativePath), 'utf8');
+  return fs.readFileSync(path.join(ROOT, relativePath), 'utf8').replace(/\r\n/g, '\n');
 }
 
 function parseSource(relativePath) {
@@ -112,11 +112,13 @@ function main() {
     failures.push('package.json files must include /bin so launchers are published');
   }
 
-  if (!isExecutable('bin/run')) {
-    failures.push('bin/run must remain executable for Unix launcher installs');
-  }
-  if (isExecutable('bin/run.cmd')) {
-    failures.push('bin/run.cmd should not be marked executable');
+  if (process.platform !== 'win32') {
+    if (!isExecutable('bin/run')) {
+      failures.push('bin/run must remain executable for Unix launcher installs');
+    }
+    if (isExecutable('bin/run.cmd')) {
+      failures.push('bin/run.cmd should not be marked executable');
+    }
   }
 
   for (const jsFile of [
