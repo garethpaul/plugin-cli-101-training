@@ -21,6 +21,7 @@ Priority:
 
 - Keep the dependency-free baseline running on pinned hosted Linux and Windows
   with maintained Node 22 and Node 24
+- Keep locked production dependencies free of high and critical audit findings
 
 - Preserve the `cli-101-training` command namespace
 - Keep workshop examples easy to read and copy
@@ -42,12 +43,11 @@ Priority:
 Next priorities:
 
 - Add tests for command prompts and flag combinations
-- Add direct tests for learner-name formatting once a test harness is restored
-- Add more direct tests for example catalog lookup and prompt behavior
-- Document supported Node and Twilio CLI versions
+- Migrate deprecated oclif packages and eliminate development-only audit debt
+- Restore a reproducible package smoke test after the oclif migration
+- Document the supported Twilio CLI host versions
 - Remove unused imports and stale generated README sections
-- Revisit lint and audit scripts once a lockfile and dependency baseline are
-  committed
+- Add dependency auditing once a lockfile and dependency baseline are committed
 
 Contribution rules:
 

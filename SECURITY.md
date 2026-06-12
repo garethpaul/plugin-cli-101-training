@@ -65,10 +65,16 @@ match the reviewed local launcher behavior.
 
 ## Dependency and Supply Chain Security
 
-Pinned, read-only hosted Linux and Windows validation runs only the
-dependency-free static and focused behavior tests on Node 22 and Node 24. It
-does not resolve the unlocked legacy dependency graph, retain checkout
-credentials, or use Twilio credentials.
+Pinned, read-only hosted Linux and Windows validation uses the committed
+lockfile with lifecycle scripts disabled, audits production dependencies, runs
+the focused behavior tests, and validates package contents on Node 22 and Node
+24. It does not retain checkout credentials or use Twilio credentials.
+
+`@twilio/cli-core` 8.3.4 and Inquirer 8.2.7 remove the production audit findings
+present in the prior dependency graph. Registry review still marks
+`@oclif/command`, `@oclif/config`, and `@oclif/dev-cli` deprecated, and the
+locked development graph retains audit findings. Migrate that tooling in a
+separate compatibility-focused change rather than forcing unsafe upgrades.
 
 Dependency updates should come from trusted package managers and should keep lockfiles in sync when lockfiles exist. Do not commit credentials, private keys, tokens, generated secrets, or machine-local configuration. If a vulnerability depends on a compromised package, typosquatting risk, insecure transitive dependency, or unsafe build step, include the package name, affected version, and the path through which it is used.
 

@@ -9,6 +9,12 @@
   GitHub-hosted validation.
 - Added pinned, read-only hosted Linux and Windows validation on Node 22 and
   Node 24 for the dependency-free CLI training baseline.
+- Documented deprecated oclif development-tool risk and kept its migration
+  separately scoped after restoring reproducible package validation.
+- Upgraded Twilio CLI Core and Inquirer, committed a reproducible lockfile, and
+  reduced the production dependency audit to zero findings.
+- Added locked installs, production auditing, and package dry runs to hosted CI.
+- Made post-package manifest cleanup portable across hosted Linux and Windows.
 
 ## 2026-06-09
 

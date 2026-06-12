@@ -15,9 +15,13 @@ reached end of life on March 24, 2026.
 - Add `.nvmrc` selecting active-LTS Node 24.
 - Replace the AppVeyor Node 10 path with GitHub-hosted Node 22 and Node 24
   validation on Linux and Windows.
-- Preserve dependency-free training command checks.
+- Upgrade Twilio CLI Core and Inquirer to patched CommonJS-compatible releases.
+- Commit a reviewed lockfile and enforce locked installs, production auditing,
+  tests, and package dry runs in hosted validation.
+- Preserve dependency-free training command checks before installation.
 
 ## Verification
 
 Run `make check` on Node 22 and Node 24, parse the hosted workflow, execute
-hostile baseline mutations, and run `git diff --check`.
+hostile baseline mutations, install from the lockfile, require a clean
+production audit, validate package contents, and run `git diff --check`.

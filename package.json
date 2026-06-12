@@ -7,10 +7,10 @@
   "dependencies": {
     "@oclif/command": "^1.5.20",
     "@oclif/config": "^1.15.1",
-    "@twilio/cli-core": "^5.0.0",
+    "@twilio/cli-core": "^8.3.4",
     "chalk": "^4.1.0",
     "clipboardy": "^2.3.0",
-    "inquirer": "^7.1.0"
+    "inquirer": "^8.2.7"
   },
   "devDependencies": {
     "@oclif/dev-cli": "^1.22.2",
@@ -59,7 +59,7 @@
     "build": "npm run check",
     "check": "node scripts/check-baseline.js",
     "lint": "npm run check",
-    "postpack": "rm -f oclif.manifest.json",
+    "postpack": "node -e \"require('fs').rmSync('oclif.manifest.json', {force: true})\"",
     "prepack": "oclif-dev manifest && oclif-dev readme",
     "test": "npm run check && node test_welcome_name_format.js && node test_examples_catalog.js",
     "version": "oclif-dev readme && git add README.md"

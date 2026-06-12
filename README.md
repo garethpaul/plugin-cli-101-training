@@ -39,7 +39,8 @@ Additional scan context:
 - Source directories: bin, src
 - Dependency and build manifests: package.json
 - Entry points or build surfaces: package.json, Makefile
-- Test-looking files: no obvious test files detected
+- Dependency-free behavior tests: `test_examples_catalog.js`,
+  `test_welcome_name_format.js`
 
 ## Getting Started
 
@@ -53,10 +54,15 @@ Additional scan context:
 ```bash
 git clone https://github.com/garethpaul/plugin-cli-101-training.git
 cd plugin-cli-101-training
-npm install
+npm ci --ignore-scripts
 ```
 
-The setup commands above are derived from repository files. Legacy mobile, Python, or JavaScript samples may require older SDKs or package versions than a modern workstation uses by default.
+Use `npm ci --ignore-scripts` with the reviewed lockfile for reproducible
+contributor and CI installs.
+The dependency-free tests can run before installation, while full launcher and
+package validation use the committed lockfile. Deprecated oclif development
+tooling remains separately scoped and must not be mistaken for production
+dependency health.
 
 ## Running or Using the Project
 
@@ -82,7 +88,7 @@ The setup commands above are derived from repository files. Legacy mobile, Pytho
 Detected npm scripts:
 
 - `npm run build` - `npm run check`
-- `npm run postpack` - `rm -f oclif.manifest.json`
+- `npm run postpack` - portable Node cleanup for `oclif.manifest.json`
 - `npm run prepack` - `oclif-dev manifest && oclif-dev readme`
 - `npm run check` - `node scripts/check-baseline.js`
 - `npm run lint` - `npm run check`
@@ -91,9 +97,9 @@ Detected npm scripts:
 
 ## Testing and Verification
 
-Pinned hosted Linux and Windows validation runs the dependency-free `npm test`
-baseline on Node 22 and Node 24 without installing the legacy oclif/Twilio
-dependency tree or retaining checkout credentials.
+Pinned hosted Linux and Windows validation performs a locked, script-disabled
+install, audits production dependencies, runs `npm test`, and validates package
+contents on Node 22 and Node 24 without retaining checkout credentials.
 
 - `make check`
 - `make lint`
@@ -119,8 +125,10 @@ When the required SDK or runtime is unavailable, use static checks and source re
 
 - Review changes touching authentication or token handling; examples from the scan include src/commands/cli-101-training/welcome.js.
 - Review changes touching external API calls or credential-adjacent configuration; examples from the scan include bin/run, package.json, src/commands/cli-101-training/examples.js, src/commands/cli-101-training/feedback.js, and 1 more.
-- Review changes touching network requests, sockets, or service endpoints; examples from the scan include appveyor.yml, package.json, src/commands/cli-101-training/examples.js, src/commands/cli-101-training/feedback.js.
-- Review changes touching file, media, JSON, XML, CSV, OCR, or data parsing; examples from the scan include appveyor.yml, package.json, src/commands/cli-101-training/examples.js.
+- Review changes touching network requests, sockets, or service endpoints;
+  relevant files include `package.json` and the Twilio training commands.
+- Review changes touching file or data parsing; relevant files include
+  `.github/workflows/check.yml`, `package.json`, and the training commands.
 - Training commands can affect live accounts when copied with real credentials.
   Keep side effects visible, use fake placeholder values, and prefer read-only
   examples for phone-number workflows.
@@ -142,6 +150,8 @@ When the required SDK or runtime is unavailable, use static checks and source re
 - Keep the executable launcher mode on `bin/run` intact when editing packaging
   files.
 - Keep packaged launcher files included when editing `package.json`.
+- Keep `npm pack --dry-run` passing on Node 22 and Node 24; migrate deprecated
+  oclif development tooling separately.
 - See `CHANGES.md` and
   `docs/plans/` for the current safe-training baseline.
 - See `SECURITY.md` for vulnerability reporting and safe research guidance.

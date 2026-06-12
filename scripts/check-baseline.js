@@ -31,6 +31,7 @@ const REQUIRED = [
   'bin/run',
   'bin/run.cmd',
   'docs/readme-overview.svg',
+  'package-lock.json',
   'package.json',
   NODE_TOOLCHAIN_PLAN,
   PLAN,
@@ -82,6 +83,13 @@ function main() {
   if (pkg.engines?.node !== '>=22.0.0' || read('.nvmrc').trim() !== '24') {
     failures.push('package metadata must require Node 22+ and .nvmrc must select Node 24');
   }
+  if (pkg.dependencies['@twilio/cli-core'] !== '^8.3.4' || pkg.dependencies.inquirer !== '^8.2.7') {
+    failures.push('package.json must keep the reviewed Twilio CLI Core and Inquirer upgrades');
+  }
+  const lock = JSON.parse(read('package-lock.json'));
+  if (lock.lockfileVersion !== 3 || lock.packages?.['']?.dependencies?.['@twilio/cli-core'] !== '^8.3.4' || lock.packages?.['']?.dependencies?.inquirer !== '^8.2.7') {
+    failures.push('package-lock.json must preserve the reviewed lockfileVersion 3 dependency graph');
+  }
   if (pkg.scripts.check !== 'node scripts/check-baseline.js') {
     failures.push('package.json must expose npm run check');
   }
@@ -94,8 +102,11 @@ function main() {
   if (pkg.scripts.build !== 'npm run check') {
     failures.push('npm run build must run the static baseline');
   }
+  if (pkg.scripts.postpack !== 'node -e "require(\'fs\').rmSync(\'oclif.manifest.json\', {force: true})"') {
+    failures.push('package.json postpack cleanup must remain portable across hosted Linux and Windows');
+  }
   if (pkg.scripts.posttest) {
-    failures.push('posttest should not run npm audit without a committed lockfile');
+    failures.push('posttest must not hide the explicit hosted production-audit gate');
   }
   if (!Array.isArray(pkg.files) || !pkg.files.includes('/bin')) {
     failures.push('package.json files must include /bin so launchers are published');
@@ -129,6 +140,9 @@ function main() {
     if (!gitignore.includes(phrase)) {
       failures.push(`.gitignore must include ${phrase}`);
     }
+  }
+  if (gitignore.includes('package-lock.json')) {
+    failures.push('.gitignore must not exclude the reviewed npm lockfile');
   }
 
   const examples = read('src/commands/cli-101-training/examples.js');
@@ -209,7 +223,11 @@ function main() {
     'actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e',
     'node-version: [22, 24]',
     'persist-credentials: false',
-    'run: npm test'
+    'cache: npm',
+    'run: npm ci --ignore-scripts',
+    'run: npm audit --omit=dev --audit-level=high',
+    'run: npm test',
+    'run: npm pack --dry-run'
   ]) {
     if (!workflow.includes(phrase)) {
       failures.push(`Check workflow must keep ${phrase}`);
@@ -229,8 +247,8 @@ function main() {
   if ((workflow.match(/persist-credentials: false/g) || []).length !== 1) {
     failures.push('Check workflow must disable persisted checkout credentials exactly once');
   }
-  if (/\bnpm (?:ci|install)\b/.test(workflow)) {
-    failures.push('Check workflow must not resolve the unlocked legacy dependency graph');
+  if (/\bnpm install\b/.test(workflow) || (workflow.match(/npm ci --ignore-scripts/g) || []).length !== 1) {
+    failures.push('Check workflow must install only from the lockfile with lifecycle scripts disabled');
   }
   const forbiddenCi = ['Invoke-' + 'WebRequest', 'codecov' + '.io', 'bash ' + 'codecov.sh'];
   for (const forbidden of forbiddenCi) {
@@ -262,6 +280,9 @@ function main() {
     'frozen example choices',
     'unknown example keys',
     'clipboard failure details',
+    'deprecated oclif',
+    'reviewed lockfile',
+    'production dependencies',
     'executable launcher',
     'packaged launcher files',
     'hosted Linux'

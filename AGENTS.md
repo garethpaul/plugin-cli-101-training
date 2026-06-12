@@ -14,7 +14,7 @@
 
 ## Development commands
 
-- Install dependencies: `npm install`
+- Install dependencies: `npm ci --ignore-scripts`
 - Full baseline: `make check`
 - Combined verification: `make verify`
 - Lint/static checks: `make lint`
@@ -52,7 +52,8 @@
 - Clipboard writes are opt-in through `--copy`; the default examples command prints without changing the local clipboard.
 - The frozen example catalog should stay limited to reviewed fake placeholders.
 - Frozen example choices should stay derived from the reviewed catalog.
-- Keep dependency-free baseline tests runnable without resolving the unlocked legacy oclif/Twilio dependency graph.
+- Keep the dependency-free baseline tests runnable before installation, and use the committed lockfile for full install, audit, launcher, and package validation.
+- Keep production dependency audits at zero high or critical findings; do not hide findings with audit overrides.
 - Do not reintroduce AppVeyor or another CI path on an end-of-life Node release.
 
 ## Agent workflow
