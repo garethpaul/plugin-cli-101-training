@@ -20,10 +20,10 @@ function loadExamplesCommand(overrides = {}) {
     setTimeout,
     exports: module.exports,
     require(name) {
-      if (name === '@oclif/command') {
+      if (name === '@oclif/core') {
         return {
           Command: class Command { log() {} error(message) { throw new Error(message); } },
-          flags: {
+          Flags: {
             boolean(definition) { return definition; },
             string(definition) { return definition; }
           }
@@ -63,7 +63,7 @@ async function main() {
   });
   const command = new Examples();
   const output = [];
-  command.parse = () => ({ flags: { copy: true, example: 'sms' } });
+  command.parse = async () => ({ flags: { copy: true, example: 'sms' } });
   command.log = value => output.push(String(value));
 
   await command.run();

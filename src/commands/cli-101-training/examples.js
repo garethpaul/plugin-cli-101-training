@@ -1,4 +1,4 @@
-const { Command, flags } = require('@oclif/command');
+const { Command, Flags } = require('@oclif/core');
 const chalk = require('chalk');
 const clipboardy = require('clipboardy');
 const inquirer = require('inquirer');
@@ -31,18 +31,18 @@ function getExampleCommand(example) {
 
 class Examples extends Command {
   static flags = {
-    example: flags.string({
+    example: Flags.string({
       char: 'e',
       description: 'training example to print',
       options: EXAMPLE_CHOICES
     }),
-    copy: flags.boolean({
+    copy: Flags.boolean({
       description: 'copy the selected example command to the clipboard after review'
     })
   };
 
   async run() {
-    const { flags } = this.parse(Examples);
+    const { flags } = await this.parse(Examples);
     let example = flags.example;
 
     if (!example) {

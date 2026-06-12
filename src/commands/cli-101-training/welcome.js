@@ -1,4 +1,4 @@
-const { Command } = require('@oclif/command');
+const { Command } = require('@oclif/core');
 const chalk = require('chalk');
 const inquirer = require('inquirer');
 

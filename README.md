@@ -1,9 +1,9 @@
 # plugin-cli-101-training
 
 Repository maintenance and static verification require Node 22 or newer;
-`.nvmrc` selects Node 24. The older oclif and Twilio CLI dependencies remain a
-separate compatibility migration and should not be used to justify running an
-unsupported Node release.
+`.nvmrc` selects Node 24. The plugin uses `@oclif/core` 1.26.2 because Twilio
+CLI Core 8.3.4 supports the oclif core 1.x host contract; the maintained oclif
+utility CLI handles package metadata generation.
 
 <!-- README-OVERVIEW-IMAGE -->
 ![Project overview](docs/readme-overview.svg)
@@ -39,8 +39,8 @@ Additional scan context:
 - Source directories: bin, src
 - Dependency and build manifests: package.json
 - Entry points or build surfaces: package.json, Makefile
-- Dependency-free behavior tests: `test_examples_catalog.js`,
-  `test_welcome_name_format.js`
+- Behavior tests: `test_examples_catalog.js`, `test_welcome_name_format.js`,
+  and the installed launcher smoke suite `test_oclif_commands.js`
 
 ## Getting Started
 
@@ -59,10 +59,9 @@ npm ci --ignore-scripts
 
 Use `npm ci --ignore-scripts` with the reviewed lockfile for reproducible
 contributor and CI installs.
-The dependency-free tests can run before installation, while full launcher and
-package validation use the committed lockfile. Deprecated oclif development
-tooling remains separately scoped and must not be mistaken for production
-dependency health.
+The dependency-free focused tests can run before installation, while full
+launcher and package validation use the committed lockfile. The reviewed full
+dependency graph has zero known audit findings.
 
 ## Running or Using the Project
 
@@ -89,16 +88,16 @@ Detected npm scripts:
 
 - `npm run build` - `npm run check`
 - `npm run postpack` - portable Node cleanup for `oclif.manifest.json`
-- `npm run prepack` - `oclif-dev manifest && oclif-dev readme`
+- `npm run prepack` - `oclif manifest && oclif readme`
 - `npm run check` - `node scripts/check-baseline.js`
 - `npm run lint` - `npm run check`
-- `npm run test` - `npm run check`
-- `npm run version` - `oclif-dev readme && git add README.md`
+- `npm run test` - static, focused behavior, and installed command smoke tests
+- `npm run version` - `oclif readme && git add README.md`
 
 ## Testing and Verification
 
 Pinned hosted Linux and Windows validation performs a locked, script-disabled
-install, audits production dependencies, runs `npm test`, and validates package
+install, audits the full dependency graph, runs `npm test`, and validates package
 contents on Node 22 and Node 24 without retaining checkout credentials.
 
 - `make check`
@@ -111,6 +110,11 @@ contents on Node 22 and Node 24 without retaining checkout credentials.
 - `node scripts/check-baseline.js`
 - `node test_welcome_name_format.js`
 - `node test_examples_catalog.js`
+- `node test_oclif_commands.js`
+
+The Make targets resolve the repository root from the loaded Makefile, so the
+same full gate can be invoked through an absolute Makefile path from another
+working directory.
 
 When the required SDK or runtime is unavailable, use static checks and source review first, then verify on a machine that has the matching platform toolchain.
 
@@ -150,8 +154,8 @@ When the required SDK or runtime is unavailable, use static checks and source re
 - Keep the executable launcher mode on `bin/run` intact when editing packaging
   files.
 - Keep packaged launcher files included when editing `package.json`.
-- Keep `npm pack --dry-run` passing on Node 22 and Node 24; migrate deprecated
-  oclif development tooling separately.
+- Keep `npm pack --dry-run` and the `@oclif/core` command smoke tests passing on
+  Node 22 and Node 24.
 - See `CHANGES.md` and
   `docs/plans/` for the current safe-training baseline.
 - See `SECURITY.md` for vulnerability reporting and safe research guidance.

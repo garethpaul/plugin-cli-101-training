@@ -1,6 +1,6 @@
 # Modern oclif development toolchain
 
-status: planned
+status: completed
 
 ## Goal
 
@@ -20,10 +20,10 @@ utility CLI replaces `oclif-dev` for manifest and README generation.
 
 ## Implementation Units
 
-1. Add characterization coverage that loads every command, exercises flag
-   parsing and safe non-interactive command paths, and invokes the packaged
-   launcher for help or version output without Twilio credentials or network
-   access.
+1. Add `test_oclif_commands.js` characterization coverage that loads every
+   command, exercises flag parsing and safe non-interactive command paths, and
+   invokes the packaged launcher for help or version output without Twilio
+   credentials or network access.
 2. Replace `@oclif/command` and `@oclif/config` with the compatible
    `@oclif/core` 1.x API in the command modules and launcher, including async
    flag parsing, core flush/error handling, and the existing Twilio
@@ -34,7 +34,8 @@ utility CLI replaces `oclif-dev` for manifest and README generation.
 4. Regenerate the lockfile, preserve package contents and executable modes,
    and update the baseline checker so archived imports, vulnerable direct
    development packages, missing smoke tests, dependency drift, and incomplete
-   plan status fail closed.
+   plan status fail closed. Keep the Make wrapper independent of the caller's
+   working directory for external gate execution.
 5. Update maintenance, security, and compatibility documentation with the
    supported Twilio/oclif boundary and the actual final audit and hosted
    verification evidence.
@@ -73,3 +74,21 @@ utility CLI replaces `oclif-dev` for manifest and README generation.
 - The repository's custom Node tests are the intended behavioral suite; the
   listed Mocha, Chai, nyc, oclif-test, Twilio cli-test, ESLint, and globby
   packages are unused until proven otherwise by implementation-time tracing.
+
+## Completion Evidence
+
+- Node 22.22.2 and Node 24.16.0 passed the learner-name, example-catalog, and
+  installed `test_oclif_commands.js` launcher suites.
+- `npm audit --audit-level=low` reported zero vulnerabilities across the full
+  495-package production and development graph.
+- `oclif manifest`, `oclif readme`, and `npm pack --dry-run` completed; the
+  package contained the manifest, both launchers, README, package metadata, and
+  all three command modules.
+- Repository-local and external-working-directory `make check` gates passed;
+  the external invocation also exposed and fixed a pre-existing Makefile
+  caller-directory dependency.
+- Eight hostile mutations covering archived command and launcher imports,
+  oclif core-major drift, a restored vulnerable direct development package,
+  omitted command smoke coverage, production-only auditing, and a nonportable
+  Make wrapper were rejected by the baseline checker, including an audit-policy
+  spoof that retained the approved command only in a workflow comment.

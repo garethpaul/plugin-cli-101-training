@@ -29,8 +29,8 @@ jobs:
           cache: npm
       - name: Install locked dependencies
         run: npm ci --ignore-scripts
-      - name: Audit production dependencies
-        run: npm audit --omit=dev --audit-level=high
+      - name: Audit full dependency graph
+        run: npm audit --audit-level=low
       - name: Run checks
         run: npm test
       - name: Validate package contents

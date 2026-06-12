@@ -1,5 +1,18 @@
 # Changes
 
+## 2026-06-12
+
+- Migrated command modules and the launcher from archived oclif packages to
+  `@oclif/core` 1.26.2, matching the Twilio CLI Core 8.3.4 host contract.
+- Replaced `@oclif/dev-cli` with the maintained oclif utility CLI and removed
+  unused legacy test, lint, coverage, and glob development dependencies.
+- Added installed launcher and command smoke coverage for help, feedback, and a
+  non-interactive examples path.
+- Changed hosted validation from a production-only high-severity audit to a
+  zero-finding audit of the full dependency graph.
+- Made every Make target execute npm from the repository root so the full gate
+  is independent of the caller's working directory.
+
 ## 2026-06-10
 
 - Raised the maintained runtime contract from Node 10 to supported Node 22+
