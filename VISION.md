@@ -19,8 +19,9 @@ The current focus is:
 
 Priority:
 
-- Keep the dependency-free baseline running on pinned hosted Linux with Node 18
-  and Node 22
+- Keep the dependency-free baseline running on pinned hosted Linux and Windows
+  with maintained Node 22 and Node 24
+- Keep the locked full dependency graph free of known audit findings
 
 - Preserve the `cli-101-training` command namespace
 - Keep workshop examples easy to read and copy
@@ -38,16 +39,15 @@ Priority:
 - Keep `make lint`, `make build`, `npm run lint`, and `npm run build` available
   as stable static gate aliases
 - Maintain oclif packaging metadata for Twilio CLI plugin installation
+- Preserve the `@oclif/core` 1.x compatibility boundary required by Twilio CLI
+  Core 8.3.4 until the host itself adopts a newer core contract
 
 Next priorities:
 
-- Add tests for command prompts and flag combinations
-- Add direct tests for learner-name formatting once a test harness is restored
-- Add more direct tests for example catalog lookup and prompt behavior
-- Document supported Node and Twilio CLI versions
+- Add tests for the remaining interactive command prompt paths
 - Remove unused imports and stale generated README sections
-- Revisit lint and audit scripts once a lockfile and dependency baseline are
-  committed
+- Reassess the oclif core compatibility boundary when Twilio CLI Core changes
+  its supported host major
 
 Contribution rules:
 

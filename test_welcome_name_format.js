@@ -20,7 +20,7 @@ function loadWelcomeCommand() {
     setTimeout,
     exports: module.exports,
     require(name) {
-      if (name === '@oclif/command') {
+      if (name === '@oclif/core') {
         return { Command: class Command { log() {} } };
       }
       if (name === 'chalk') {

@@ -1,9 +1,34 @@
 # Changes
 
+## 2026-06-12
+
+- Migrated command modules and the launcher from archived oclif packages to
+  `@oclif/core` 1.26.2, matching the Twilio CLI Core 8.3.4 host contract.
+- Replaced `@oclif/dev-cli` with the maintained oclif utility CLI and removed
+  unused legacy test, lint, coverage, and glob development dependencies.
+- Added installed launcher and command smoke coverage for help, feedback, and a
+  non-interactive examples path.
+- Changed hosted validation from a production-only high-severity audit to a
+  zero-finding audit of the full dependency graph.
+- Made every Make target execute npm from the repository root so the full gate
+  is independent of the caller's working directory.
+
 ## 2026-06-10
 
-- Added pinned, read-only hosted Linux validation on Node 18 and Node 22 for
-  the dependency-free CLI training baseline.
+- Raised the maintained runtime contract from Node 10 to supported Node 22+
+  and added an `.nvmrc` selecting Node 24 while leaving the oclif/Twilio
+  dependency migration separately scoped.
+- Retired the obsolete AppVeyor Node 10 configuration in favor of maintained
+  GitHub-hosted validation.
+- Added pinned, read-only hosted Linux and Windows validation on Node 22 and
+  Node 24 for the dependency-free CLI training baseline.
+- Documented deprecated oclif development-tool risk and kept its migration
+  separately scoped after restoring reproducible package validation.
+- Upgraded Twilio CLI Core and Inquirer, committed a reproducible lockfile, and
+  reduced the production dependency audit to zero findings.
+- Added locked installs, production auditing, and package dry runs to hosted CI.
+- Made post-package manifest cleanup portable across hosted Linux and Windows.
+- Made baseline file reads CRLF-neutral and kept Unix mode checks on Unix hosts.
 
 ## 2026-06-09
 

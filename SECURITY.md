@@ -65,9 +65,17 @@ match the reviewed local launcher behavior.
 
 ## Dependency and Supply Chain Security
 
-Pinned, read-only hosted Linux validation runs only the dependency-free static
-and focused behavior tests. It does not resolve the unlocked legacy dependency
-graph or use Twilio credentials.
+Pinned, read-only hosted Linux and Windows validation uses the committed
+lockfile with lifecycle scripts disabled, audits the full dependency graph, runs
+the focused behavior tests, and validates package contents on Node 22 and Node
+24. It does not retain checkout credentials or use Twilio credentials.
+
+`@oclif/core` 1.26.2 preserves the host contract required by Twilio CLI Core
+8.3.4 while replacing the archived `@oclif/command` and `@oclif/config`
+packages. The maintained oclif utility CLI replaces `@oclif/dev-cli`; unused
+legacy test, lint, coverage, and glob packages are removed. The reviewed full
+production dependencies and development dependency graph reports zero known
+vulnerabilities.
 
 Dependency updates should come from trusted package managers and should keep lockfiles in sync when lockfiles exist. Do not commit credentials, private keys, tokens, generated secrets, or machine-local configuration. If a vulnerability depends on a compromised package, typosquatting risk, insecure transitive dependency, or unsafe build step, include the package name, affected version, and the path through which it is used.
 
