@@ -17,7 +17,10 @@ const GATE_ALIASES_PLAN = 'docs/plans/2026-06-09-plugin-cli-101-training-gate-al
 const BIDI_NAME_PLAN = 'docs/plans/2026-06-09-plugin-cli-101-training-bidi-name-sanitization.md';
 const EXAMPLE_LOOKUP_PLAN = 'docs/plans/2026-06-10-plugin-cli-101-training-example-lookup.md';
 const NODE_TOOLCHAIN_PLAN = 'docs/plans/2026-06-10-plugin-cli-node20-toolchain.md';
+const CLIPBOARD_FAILURE_PLAN = 'docs/plans/2026-06-10-plugin-cli-101-training-clipboard-failures.md';
+const HOSTED_VALIDATION_PLAN = 'docs/plans/2026-06-10-hosted-node-validation.md';
 const REQUIRED = [
+  '.github/workflows/check.yml',
   '.gitignore',
   'CHANGES.md',
   '.nvmrc',
@@ -41,6 +44,8 @@ const REQUIRED = [
   GATE_ALIASES_PLAN,
   BIDI_NAME_PLAN,
   EXAMPLE_LOOKUP_PLAN,
+  CLIPBOARD_FAILURE_PLAN,
+  HOSTED_VALIDATION_PLAN,
   'scripts/check-baseline.js',
   'src/commands/cli-101-training/examples.js',
   'src/commands/cli-101-training/feedback.js',
@@ -144,7 +149,8 @@ function main() {
     'copy: flags.boolean',
     'flags.copy',
     'Re-run with --copy',
-    'clipboardy.writeSync'
+    'clipboardy.writeSync',
+    'Clipboard copy skipped: clipboard unavailable.'
   ]) {
     if (!examples.includes(phrase)) {
       failures.push(`examples.js must include ${phrase}`);
@@ -192,6 +198,47 @@ function main() {
     failures.push('obsolete AppVeyor configuration must stay retired');
   }
 
+  const workflow = read('.github/workflows/check.yml');
+  for (const phrase of [
+    'permissions:\n  contents: read',
+    'cancel-in-progress: true',
+    'runs-on: ${{ matrix.os }}',
+    'os: [ubuntu-24.04, windows-2025]',
+    'timeout-minutes: 10',
+    'actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10',
+    'actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e',
+    'node-version: [22, 24]',
+    'persist-credentials: false',
+    'run: npm test'
+  ]) {
+    if (!workflow.includes(phrase)) {
+      failures.push(`Check workflow must keep ${phrase}`);
+    }
+  }
+  const expectedActions = [
+    'actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10',
+    'actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e'
+  ];
+  const actions = [...workflow.matchAll(/^\s*(?:-\s*)?uses:\s*(\S+)\s*$/gm)].map(match => match[1]);
+  if (JSON.stringify(actions) !== JSON.stringify(expectedActions)) {
+    failures.push('Check workflow must use only the approved pinned checkout and setup-node actions');
+  }
+  if ((workflow.match(/^permissions:/gm) || []).length !== 1 || /^\s+[\w-]+:\s*write\s*$/m.test(workflow)) {
+    failures.push('Check workflow must keep one read-only permissions block');
+  }
+  if ((workflow.match(/persist-credentials: false/g) || []).length !== 1) {
+    failures.push('Check workflow must disable persisted checkout credentials exactly once');
+  }
+  if (/\bnpm (?:ci|install)\b/.test(workflow)) {
+    failures.push('Check workflow must not resolve the unlocked legacy dependency graph');
+  }
+  const forbiddenCi = ['Invoke-' + 'WebRequest', 'codecov' + '.io', 'bash ' + 'codecov.sh'];
+  for (const forbidden of forbiddenCi) {
+    if (workflow.includes(forbidden)) {
+      failures.push(`Check workflow must not download and execute remote CI scripts: ${forbidden}`);
+    }
+  }
+
   const docs = ['README.md', 'SECURITY.md', 'VISION.md', 'CHANGES.md']
     .map(read)
     .join('\n');
@@ -214,8 +261,10 @@ function main() {
     'frozen example catalog',
     'frozen example choices',
     'unknown example keys',
+    'clipboard failure details',
     'executable launcher',
-    'packaged launcher files'
+    'packaged launcher files',
+    'hosted Linux'
   ]) {
     if (!docs.toLowerCase().includes(phrase.toLowerCase())) {
       failures.push(`docs must mention ${phrase}`);
@@ -294,6 +343,27 @@ function main() {
   for (const phrase of ['status: completed', 'getExampleCommand', 'unknown example keys', 'test_examples_catalog.js', 'npm test']) {
     if (!exampleLookupPlan.includes(phrase)) {
       failures.push(`example lookup plan must mention ${phrase}`);
+    }
+  }
+
+  const clipboardFailurePlan = read(CLIPBOARD_FAILURE_PLAN);
+  for (const phrase of ['status: completed', 'clipboard unavailable', 'test_examples_catalog.js', 'npm test']) {
+    if (!clipboardFailurePlan.includes(phrase)) {
+      failures.push(`clipboard failure plan must mention ${phrase}`);
+    }
+  }
+
+  const nodeToolchainPlan = read(NODE_TOOLCHAIN_PLAN);
+  for (const phrase of ['status: completed', 'Node 22', 'Node 24', 'AppVeyor', 'make check']) {
+    if (!nodeToolchainPlan.includes(phrase)) {
+      failures.push(`Node toolchain plan must mention ${phrase}`);
+    }
+  }
+
+  const hostedValidationPlan = read(HOSTED_VALIDATION_PLAN);
+  for (const phrase of ['status: completed', 'Node 22', 'Node 24', 'Linux', 'Windows', 'npm test']) {
+    if (!hostedValidationPlan.includes(phrase)) {
+      failures.push(`hosted validation plan must mention ${phrase}`);
     }
   }
 

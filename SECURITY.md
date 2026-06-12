@@ -44,6 +44,8 @@ before running copied examples with live Twilio credentials.
 
 Clipboard writes should remain opt-in through `--copy` so learners can review
 example commands before changing their local clipboard.
+Clipboard failure details should not be echoed because provider errors can
+contain machine-specific paths or terminal control text.
 
 The frozen example catalog should only contain reviewed fake placeholders.
 Frozen example choices should stay derived from the reviewed example catalog so
@@ -62,6 +64,11 @@ Keep packaged launcher files included in `package.json` so published installs
 match the reviewed local launcher behavior.
 
 ## Dependency and Supply Chain Security
+
+Pinned, read-only hosted Linux and Windows validation runs only the
+dependency-free static and focused behavior tests on Node 22 and Node 24. It
+does not resolve the unlocked legacy dependency graph, retain checkout
+credentials, or use Twilio credentials.
 
 Dependency updates should come from trusted package managers and should keep lockfiles in sync when lockfiles exist. Do not commit credentials, private keys, tokens, generated secrets, or machine-local configuration. If a vulnerability depends on a compromised package, typosquatting risk, insecure transitive dependency, or unsafe build step, include the package name, affected version, and the path through which it is used.
 

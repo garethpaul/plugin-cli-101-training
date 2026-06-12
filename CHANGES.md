@@ -7,6 +7,8 @@
   dependency migration separately scoped.
 - Retired the obsolete AppVeyor Node 10 configuration in favor of maintained
   GitHub-hosted validation.
+- Added pinned, read-only hosted Linux and Windows validation on Node 22 and
+  Node 24 for the dependency-free CLI training baseline.
 
 ## 2026-06-09
 
@@ -34,6 +36,8 @@
 - Added docs and checks that make side effects, placeholders, and clipboard
   behavior explicit.
 - Made example-command clipboard writes opt-in with `--copy`.
+- Replaced raw clipboard failure details with a stable terminal message and
+  direct command coverage.
 - Sanitized learner names before the welcome command echoes them to the
   terminal.
 - Froze the fake placeholder example catalog to keep training commands stable.

@@ -91,6 +91,10 @@ Detected npm scripts:
 
 ## Testing and Verification
 
+Pinned hosted Linux and Windows validation runs the dependency-free `npm test`
+baseline on Node 22 and Node 24 without installing the legacy oclif/Twilio
+dependency tree or retaining checkout credentials.
+
 - `make check`
 - `make lint`
 - `make build`
@@ -122,6 +126,8 @@ When the required SDK or runtime is unavailable, use static checks and source re
   examples for phone-number workflows.
 - Clipboard writes are opt-in through `--copy`; the default examples command
   prints without changing the local clipboard.
+- Clipboard failure details are not echoed; unavailable clipboard services use
+  a stable learner-facing message.
 - The frozen example catalog should stay limited to reviewed fake placeholders.
 - Frozen example choices should stay derived from the reviewed catalog.
 - Learner names entered at the welcome prompt should stay display-only and
