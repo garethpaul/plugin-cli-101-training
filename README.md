@@ -1,5 +1,10 @@
 # plugin-cli-101-training
 
+Repository maintenance and static verification require Node 22 or newer;
+`.nvmrc` selects Node 24. The older oclif and Twilio CLI dependencies remain a
+separate compatibility migration and should not be used to justify running an
+unsupported Node release.
+
 <!-- README-OVERVIEW-IMAGE -->
 ![Project overview](docs/readme-overview.svg)
 
@@ -41,7 +46,7 @@ Additional scan context:
 ### Prerequisites
 
 - Git
-- Node.js and npm
+- Node.js 22 or newer and npm; Node 24 is the repository default
 
 ### Setup
 

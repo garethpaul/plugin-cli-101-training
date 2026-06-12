@@ -1,5 +1,13 @@
 # Changes
 
+## 2026-06-10
+
+- Raised the maintained runtime contract from Node 10 to supported Node 22+
+  and added an `.nvmrc` selecting Node 24 while leaving the oclif/Twilio
+  dependency migration separately scoped.
+- Retired the obsolete AppVeyor Node 10 configuration in favor of maintained
+  GitHub-hosted validation.
+
 ## 2026-06-09
 
 - Added stable `make lint`, `make build`, `npm run lint`, and `npm run build`

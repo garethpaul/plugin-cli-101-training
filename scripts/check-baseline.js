@@ -16,18 +16,20 @@ const FROZEN_CHOICES_PLAN = 'docs/plans/2026-06-09-plugin-cli-101-training-froze
 const GATE_ALIASES_PLAN = 'docs/plans/2026-06-09-plugin-cli-101-training-gate-aliases.md';
 const BIDI_NAME_PLAN = 'docs/plans/2026-06-09-plugin-cli-101-training-bidi-name-sanitization.md';
 const EXAMPLE_LOOKUP_PLAN = 'docs/plans/2026-06-10-plugin-cli-101-training-example-lookup.md';
+const NODE_TOOLCHAIN_PLAN = 'docs/plans/2026-06-10-plugin-cli-node20-toolchain.md';
 const REQUIRED = [
   '.gitignore',
   'CHANGES.md',
+  '.nvmrc',
   'Makefile',
   'README.md',
   'SECURITY.md',
   'VISION.md',
-  'appveyor.yml',
   'bin/run',
   'bin/run.cmd',
   'docs/readme-overview.svg',
   'package.json',
+  NODE_TOOLCHAIN_PLAN,
   PLAN,
   CLIPBOARD_PLAN,
   CHECK_PLAN,
@@ -72,6 +74,9 @@ function main() {
   failIfMissing(failures);
 
   const pkg = JSON.parse(read('package.json'));
+  if (pkg.engines?.node !== '>=22.0.0' || read('.nvmrc').trim() !== '24') {
+    failures.push('package metadata must require Node 22+ and .nvmrc must select Node 24');
+  }
   if (pkg.scripts.check !== 'node scripts/check-baseline.js') {
     failures.push('package.json must expose npm run check');
   }
@@ -183,15 +188,8 @@ function main() {
     }
   }
 
-  const appveyor = read('appveyor.yml');
-  if (!appveyor.includes('nodejs_version: "10"')) {
-    failures.push('appveyor.yml must use the package-supported Node 10 baseline');
-  }
-  const forbiddenCi = ['Invoke-' + 'WebRequest', 'codecov' + '.io', 'bash ' + 'codecov.sh'];
-  for (const forbidden of forbiddenCi) {
-    if (appveyor.includes(forbidden)) {
-      failures.push(`appveyor.yml must not download and execute remote CI scripts: ${forbidden}`);
-    }
+  if (fs.existsSync(path.join(ROOT, 'appveyor.yml'))) {
+    failures.push('obsolete AppVeyor configuration must stay retired');
   }
 
   const docs = ['README.md', 'SECURITY.md', 'VISION.md', 'CHANGES.md']
