@@ -40,6 +40,17 @@ utility CLI replaces `oclif-dev` for manifest and README generation.
    supported Twilio/oclif boundary and the actual final audit and hosted
    verification evidence.
 
+## Work Completed
+
+- Migrated command modules and the launcher from archived `@oclif/command` and
+  `@oclif/config` packages to compatible `@oclif/core` 1.26.2 APIs.
+- Replaced `@oclif/dev-cli` with the maintained oclif utility CLI 4.23.14 and
+  removed unused direct test, lint, coverage, and glob dependencies.
+- Added installed launcher smoke tests for help, feedback, and non-interactive
+  examples while preserving command IDs and Twilio CLI Core 8.3.4 integration.
+- Enforced a zero-finding complete-graph audit, portable package cleanup, and
+  repository-root Make execution across Linux and Windows.
+
 ## Verification
 
 - Run `npm ci --ignore-scripts` from the reviewed lockfile.
@@ -75,7 +86,7 @@ utility CLI replaces `oclif-dev` for manifest and README generation.
   listed Mocha, Chai, nyc, oclif-test, Twilio cli-test, ESLint, and globby
   packages are unused until proven otherwise by implementation-time tracing.
 
-## Completion Evidence
+## Verification Completed
 
 - Node 22.22.2 and Node 24.16.0 passed the learner-name, example-catalog, and
   installed `test_oclif_commands.js` launcher suites.
@@ -92,3 +103,13 @@ utility CLI replaces `oclif-dev` for manifest and README generation.
   omitted command smoke coverage, production-only auditing, and a nonportable
   Make wrapper were rejected by the baseline checker, including an audit-policy
   spoof that retained the approved command only in a workflow comment.
+- GitHub Actions push run `27400192298` and pull-request run `27400193551`
+  completed successfully across `ubuntu-24.04`, `windows-2025`, Node 22, and
+  Node 24 on exact implementation head
+  `d09e8682d01ed00b4838d237215f967a08cf129d`.
+- `npm ci --ignore-scripts`, `npm audit --audit-level=low`, `npm test`,
+  `make lint`, `make build`, `make check`, and `npm pack --dry-run` passed; the
+  complete 495-package graph reported zero vulnerabilities and the package
+  contained the expected eight files.
+- The reviewed graph preserves compatible `@oclif/core` 1.26.2 and the
+  maintained oclif utility CLI 4.23.14 without archived direct oclif tools.

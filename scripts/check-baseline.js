@@ -62,6 +62,15 @@ function read(relativePath) {
   return fs.readFileSync(path.join(ROOT, relativePath), 'utf8').replace(/\r\n/g, '\n');
 }
 
+function markdownSection(text, heading) {
+  const lines = text.split('\n');
+  const start = lines.indexOf(`## ${heading}`);
+  if (start === -1) return '';
+  const followingHeading = lines.slice(start + 1).findIndex(line => line.startsWith('## '));
+  const end = followingHeading === -1 ? lines.length : start + 1 + followingHeading;
+  return lines.slice(start + 1, end).join('\n').trim();
+}
+
 function parseSource(relativePath) {
   return read(relativePath).replace(/^#![^\n]*\n/, '');
 }
@@ -437,9 +446,39 @@ function main() {
   }
 
   const oclifToolchainPlan = read(OCLIF_TOOLCHAIN_PLAN);
-  for (const phrase of ['status: completed', '@oclif/core', 'oclif utility CLI', 'npm audit', 'test_oclif_commands.js', 'make check']) {
-    if (!oclifToolchainPlan.includes(phrase)) {
-      failures.push(`oclif toolchain plan must mention ${phrase}`);
+  const oclifToolchainStatus = [...oclifToolchainPlan.matchAll(/^status:\s*(.+?)\s*$/gmi)].map(match => match[1]);
+  const oclifToolchainWork = markdownSection(oclifToolchainPlan, 'Work Completed');
+  const oclifToolchainVerification = markdownSection(oclifToolchainPlan, 'Verification Completed');
+  if (oclifToolchainStatus.length !== 1 || oclifToolchainStatus[0] !== 'completed' || !oclifToolchainWork) {
+    failures.push('oclif toolchain plan must record one completed status and completed work');
+  }
+  if (!oclifToolchainVerification || /\b(?:pending|todo|tbd|not run)\b/i.test(oclifToolchainVerification)) {
+    failures.push('oclif toolchain plan must record finished verification without pending markers');
+  }
+  for (const evidence of [
+    'Node 22.22.2',
+    'Node 24.16.0',
+    '@oclif/core',
+    'oclif utility CLI',
+    'test_oclif_commands.js',
+    'npm ci --ignore-scripts',
+    'npm audit --audit-level=low',
+    'npm test',
+    'make lint',
+    'make build',
+    'make check',
+    'npm pack --dry-run',
+    'Eight hostile mutations',
+    '27400192298',
+    '27400193551',
+    'd09e8682d01ed00b4838d237215f967a08cf129d',
+    'ubuntu-24.04',
+    'windows-2025',
+    '495-package graph reported zero vulnerabilities',
+    'expected eight files'
+  ]) {
+    if (!oclifToolchainVerification.includes(evidence)) {
+      failures.push(`oclif toolchain plan must preserve verification evidence: ${evidence}`);
     }
   }
 
