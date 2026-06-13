@@ -31,6 +31,8 @@ Priority:
 - Keep clipboard failure details out of learner-facing terminal output
 - Keep learner names sanitized before terminal output
 - Strip bidirectional formatting controls from learner names before display
+- Strip all Unicode control and format characters from learner names before
+  display
 - Keep the frozen example catalog limited to reviewed fake placeholders
 - Keep frozen example choices derived from the reviewed catalog
 - Keep unknown example keys from resolving to command output

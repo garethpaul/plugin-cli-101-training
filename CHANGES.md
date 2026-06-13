@@ -1,5 +1,10 @@
 # Changes
 
+## 2026-06-13
+
+- Expanded learner-name terminal sanitization to remove all Unicode control
+  and format characters, including C1 controls and zero-width formatting.
+
 ## 2026-06-12
 
 - Migrated command modules and the launcher from archived oclif packages to
