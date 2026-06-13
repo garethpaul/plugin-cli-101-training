@@ -21,6 +21,7 @@ const CLIPBOARD_FAILURE_PLAN = 'docs/plans/2026-06-10-plugin-cli-101-training-cl
 const HOSTED_VALIDATION_PLAN = 'docs/plans/2026-06-10-hosted-node-validation.md';
 const OCLIF_TOOLCHAIN_PLAN = 'docs/plans/2026-06-12-oclif-development-toolchain.md';
 const UNICODE_CONTROL_PLAN = 'docs/plans/2026-06-13-unicode-control-name-sanitization.md';
+const INTERACTIVE_PROMPT_PLAN = 'docs/plans/2026-06-13-interactive-prompt-tests.md';
 const REQUIRED = [
   '.github/workflows/check.yml',
   '.gitignore',
@@ -51,6 +52,7 @@ const REQUIRED = [
   HOSTED_VALIDATION_PLAN,
   OCLIF_TOOLCHAIN_PLAN,
   UNICODE_CONTROL_PLAN,
+  INTERACTIVE_PROMPT_PLAN,
   'scripts/check-baseline.js',
   'src/commands/cli-101-training/examples.js',
   'src/commands/cli-101-training/feedback.js',
@@ -259,9 +261,16 @@ function main() {
   }
 
   const welcomeTests = read('test_welcome_name_format.js');
-  for (const phrase of ["'A\\u009BB'", "'zero\\u200Dwidth'", "'zerowidth'"]) {
+  for (const phrase of ["'A\\u009BB'", "'zero\\u200Dwidth'", "'zerowidth'", 'function loadWelcomeCommand(overrides = {})', "prompt: async () => ({ name: ' A\\u0000lice ' })", "output.includes('Hello Alice! Thanks for taking 101 training today.')"]) {
     if (!welcomeTests.includes(phrase)) {
       failures.push(`welcome name tests must include ${phrase}`);
+    }
+  }
+
+  const exampleTests = read('test_examples_catalog.js');
+  for (const phrase of ['overrides.inquirer', "prompt: async () => ({ example: 'webhook' })", 'interactiveCommand.parse = async () => ({ flags: {} })', "interactiveOutput.some(line => line.includes('<YOUR_TWILIO_NUMBER>'))", 'assert.strictEqual(clipboardWrites, 0)']) {
+    if (!exampleTests.includes(phrase)) {
+      failures.push(`example catalog tests must include ${phrase}`);
     }
   }
 
@@ -351,7 +360,8 @@ function main() {
     'production dependencies',
     'executable launcher',
     'packaged launcher files',
-    'hosted Linux'
+    'hosted Linux',
+    'interactive welcome and example prompt paths'
   ]) {
     if (!docs.toLowerCase().includes(phrase.toLowerCase())) {
       failures.push(`docs must mention ${phrase}`);
@@ -495,6 +505,13 @@ function main() {
   for (const phrase of ['status: completed', 'npm test', 'six hostile mutations', 'Unicode control', 'Unicode format']) {
     if (!unicodeControlPlan.includes(phrase)) {
       failures.push(`Unicode control plan must mention ${phrase}`);
+    }
+  }
+
+  const interactivePromptPlan = read(INTERACTIVE_PROMPT_PLAN);
+  for (const phrase of ['status: completed', 'Node 22', 'Node 24', 'npm test', 'hostile mutations rejected', 'production command sources had no diff', 'git diff --check', 'secret, real-phone-number, generated-artifact, and dependency-drift scan']) {
+    if (!interactivePromptPlan.includes(phrase)) {
+      failures.push(`interactive prompt plan must mention ${phrase}`);
     }
   }
 

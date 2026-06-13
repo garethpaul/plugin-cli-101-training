@@ -36,6 +36,8 @@ Priority:
 - Keep the frozen example catalog limited to reviewed fake placeholders
 - Keep frozen example choices derived from the reviewed catalog
 - Keep unknown example keys from resolving to command output
+- Keep interactive welcome and example prompt paths covered without live Twilio
+  access or implicit clipboard writes
 - Keep `bin/run` as the executable launcher for Unix installs
 - Keep packaged launcher files included for npm publishes
 - Keep `make lint`, `make build`, `npm run lint`, and `npm run build` available
@@ -46,7 +48,6 @@ Priority:
 
 Next priorities:
 
-- Add tests for the remaining interactive command prompt paths
 - Remove unused imports and stale generated README sections
 - Reassess the oclif core compatibility boundary when Twilio CLI Core changes
   its supported host major
