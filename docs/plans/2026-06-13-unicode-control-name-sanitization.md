@@ -1,6 +1,6 @@
 # Unicode control name sanitization
 
-status: planned
+status: completed
 
 ## Context
 
@@ -22,5 +22,20 @@ or hide the visible ordering of user-supplied text.
 
 ## Verification
 
-- Run focused tests, all npm and Make gates, hostile mutations, diff checks,
-  artifact scans, secret scans, and the installed dependency audit.
+## Work completed
+
+- Replaced the separate ASCII and bidi filters with one Unicode property-based
+  Unicode control (`Cc`) and Unicode format (`Cf`) guard.
+- Added C1 terminal-control and zero-width format regression cases.
+- Updated static contracts and contributor, security, vision, README, and
+  change documentation.
+
+## Verification completed
+
+- `node test_welcome_name_format.js`, `npm test`, `npm run lint`,
+  `npm run build`, and all Make gates passed.
+- `npm audit --audit-level=low` reported zero known vulnerabilities.
+- The checker rejected six hostile mutations covering C1 controls, Unicode
+  format characters, property flags, focused tests, documentation, and plan
+  evidence.
+- Diff, generated-artifact, package-lock, and secret scans passed.

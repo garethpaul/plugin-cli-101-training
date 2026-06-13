@@ -20,6 +20,7 @@ const NODE_TOOLCHAIN_PLAN = 'docs/plans/2026-06-10-plugin-cli-node20-toolchain.m
 const CLIPBOARD_FAILURE_PLAN = 'docs/plans/2026-06-10-plugin-cli-101-training-clipboard-failures.md';
 const HOSTED_VALIDATION_PLAN = 'docs/plans/2026-06-10-hosted-node-validation.md';
 const OCLIF_TOOLCHAIN_PLAN = 'docs/plans/2026-06-12-oclif-development-toolchain.md';
+const UNICODE_CONTROL_PLAN = 'docs/plans/2026-06-13-unicode-control-name-sanitization.md';
 const REQUIRED = [
   '.github/workflows/check.yml',
   '.gitignore',
@@ -49,6 +50,7 @@ const REQUIRED = [
   CLIPBOARD_FAILURE_PLAN,
   HOSTED_VALIDATION_PLAN,
   OCLIF_TOOLCHAIN_PLAN,
+  UNICODE_CONTROL_PLAN,
   'scripts/check-baseline.js',
   'src/commands/cli-101-training/examples.js',
   'src/commands/cli-101-training/feedback.js',
@@ -247,13 +249,19 @@ function main() {
   for (const phrase of [
     'function formatLearnerName',
     'LEARNER_NAME_MAX_LENGTH = 80',
-    'BIDI_CONTROL_RE = /[\\u202A-\\u202E\\u2066-\\u2069]/g',
-    'replace(/[\\x00-\\x1F\\x7F]/g, \'\')',
-    "replace(BIDI_CONTROL_RE, '')",
+    'UNICODE_CONTROL_OR_FORMAT_RE = /[\\p{Cc}\\p{Cf}]/gu',
+    "replace(UNICODE_CONTROL_OR_FORMAT_RE, '')",
     'module.exports.formatLearnerName'
   ]) {
     if (!welcome.includes(phrase)) {
       failures.push(`welcome.js must include ${phrase}`);
+    }
+  }
+
+  const welcomeTests = read('test_welcome_name_format.js');
+  for (const phrase of ["'A\\u009BB'", "'zero\\u200Dwidth'", "'zerowidth'"]) {
+    if (!welcomeTests.includes(phrase)) {
+      failures.push(`welcome name tests must include ${phrase}`);
     }
   }
 
@@ -327,6 +335,7 @@ function main() {
     '--copy',
     'learner names',
     'bidirectional formatting controls',
+    'Unicode control and format characters',
     'node test_welcome_name_format.js',
     'node test_examples_catalog.js',
     'node test_oclif_commands.js',
@@ -479,6 +488,13 @@ function main() {
   ]) {
     if (!oclifToolchainVerification.includes(evidence)) {
       failures.push(`oclif toolchain plan must preserve verification evidence: ${evidence}`);
+    }
+  }
+
+  const unicodeControlPlan = read(UNICODE_CONTROL_PLAN);
+  for (const phrase of ['status: completed', 'npm test', 'six hostile mutations', 'Unicode control', 'Unicode format']) {
+    if (!unicodeControlPlan.includes(phrase)) {
+      failures.push(`Unicode control plan must mention ${phrase}`);
     }
   }
 

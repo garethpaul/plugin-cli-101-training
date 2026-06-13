@@ -50,6 +50,7 @@
 - Do not commit real Twilio credentials, Account SIDs, Auth Tokens, customer phone numbers, messaging service IDs, webhook URLs, or workshop attendee data.
 - Training commands can affect live accounts when copied with real credentials. Keep side effects visible, use fake placeholder values, and prefer read-only examples for phone-number workflows.
 - Clipboard writes are opt-in through `--copy`; the default examples command prints without changing the local clipboard.
+- Remove Unicode control and format characters before displaying learner names.
 - The frozen example catalog should stay limited to reviewed fake placeholders.
 - Frozen example choices should stay derived from the reviewed catalog.
 - Keep the dependency-free baseline tests runnable before installation, and use the committed lockfile for full install, audit, launcher, and package validation.

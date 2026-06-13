@@ -53,9 +53,9 @@ prompt options do not drift at runtime.
 Unknown example keys should fail before command text is printed or copied.
 
 Learner names entered at prompts should be treated as display-only input and
-sanitized before terminal output. Strip terminal control characters and
-bidirectional formatting controls so prompt input cannot visually reorder
-console text.
+sanitized before terminal output. Strip Unicode control and format characters,
+including bidirectional formatting controls, so prompt input cannot visually
+reorder console text or issue terminal control sequences.
 
 Keep `bin/run` as the executable launcher and avoid permission churn in
 packaging files, because broken launcher metadata can change how learners run

@@ -77,9 +77,9 @@ dependency graph has zero known audit findings.
   runtime.
 - Frozen example choices keep prompt options aligned with the reviewed catalog.
 - Unknown example keys fail before any command text is printed or copied.
-- The welcome command trims learner names, strips terminal control characters,
-  strips bidirectional formatting controls, and caps displayed names before
-  echoing them.
+- The welcome command trims learner names, strips all Unicode control and
+  format characters (including bidirectional formatting controls), and caps
+  displayed names before echoing them.
 - Keep `bin/run` as the executable launcher for Unix installs; `bin/run.cmd`
   remains the non-executable Windows wrapper.
 - Packaged launcher files stay included through the package `files` list.

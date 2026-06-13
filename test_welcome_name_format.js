@@ -47,6 +47,8 @@ assert.strictEqual(formatLearnerName(null), 'there');
 assert.strictEqual(formatLearnerName(' Alice '), 'Alice');
 assert.strictEqual(formatLearnerName('A\u0000B\nC'), 'ABC');
 assert.strictEqual(formatLearnerName('\u202Eevil\u2066'), 'evil');
+assert.strictEqual(formatLearnerName('A\u009BB'), 'AB');
+assert.strictEqual(formatLearnerName('zero\u200Dwidth'), 'zerowidth');
 assert.strictEqual(formatLearnerName('x'.repeat(100)).length, 80);
 
 console.log('welcome name formatting tests passed.');
