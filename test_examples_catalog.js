@@ -36,7 +36,7 @@ function loadExamplesCommand(overrides = {}) {
         return overrides.clipboardy || { writeSync() {} };
       }
       if (name === 'inquirer') {
-        return { prompt: async () => ({ example: 'sms' }) };
+        return overrides.inquirer || { prompt: async () => ({ example: 'sms' }) };
       }
       return require(name);
     }
@@ -52,6 +52,20 @@ async function main() {
   assert.strictEqual(getExampleCommand('__missing__'), null);
   assert.ok(getExampleCommand('sms').includes('+15555550100'));
   assert.ok(getExampleCommand('webhook').includes('<YOUR_TWILIO_NUMBER>'));
+
+  let clipboardWrites = 0;
+  const InteractiveExamples = loadExamplesCommand({
+    clipboardy: { writeSync() { clipboardWrites += 1; } },
+    inquirer: { prompt: async () => ({ example: 'webhook' }) }
+  });
+  const interactiveCommand = new InteractiveExamples();
+  const interactiveOutput = [];
+  interactiveCommand.parse = async () => ({ flags: {} });
+  interactiveCommand.log = value => interactiveOutput.push(String(value));
+  await interactiveCommand.run();
+  assert.ok(interactiveOutput.some(line => line.includes('<YOUR_TWILIO_NUMBER>')));
+  assert.ok(interactiveOutput.includes('Clipboard copy skipped. Re-run with --copy after reviewing the command.'));
+  assert.strictEqual(clipboardWrites, 0);
 
   const sensitiveDetail = '/Users/learner/private/clipboard.sock';
   const Examples = loadExamplesCommand({

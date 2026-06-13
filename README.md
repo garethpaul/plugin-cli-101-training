@@ -41,6 +41,8 @@ Additional scan context:
 - Entry points or build surfaces: package.json, Makefile
 - Behavior tests: `test_examples_catalog.js`, `test_welcome_name_format.js`,
   and the installed launcher smoke suite `test_oclif_commands.js`
+- The VM harnesses execute the interactive welcome and example prompt paths,
+  including sanitized prompted names and clipboard opt-in behavior.
 
 ## Getting Started
 
@@ -144,6 +146,8 @@ When the required SDK or runtime is unavailable, use static checks and source re
 - Frozen example choices should stay derived from the reviewed catalog.
 - Learner names entered at the welcome prompt should stay display-only and
   sanitized before terminal output, including bidirectional formatting controls
+- Prompted example choices must resolve through the frozen catalog and must not
+  write to the clipboard unless `--copy` is present.
   that could visually reorder console text.
 
 ## Maintenance Notes

@@ -8,7 +8,7 @@ const vm = require('vm');
 
 const WELCOME = path.join(__dirname, 'src/commands/cli-101-training/welcome.js');
 
-function loadWelcomeCommand() {
+function loadWelcomeCommand(overrides = {}) {
   const source = fs.readFileSync(WELCOME, 'utf8');
   const module = { exports: {} };
   const sandbox = {
@@ -31,7 +31,7 @@ function loadWelcomeCommand() {
         };
       }
       if (name === 'inquirer') {
-        return { prompt: async () => ({ name: '' }) };
+        return overrides.inquirer || { prompt: async () => ({ name: '' }) };
       }
       return require(name);
     }
@@ -41,14 +41,30 @@ function loadWelcomeCommand() {
   return module.exports;
 }
 
-const { formatLearnerName } = loadWelcomeCommand();
+async function main() {
+  const { formatLearnerName } = loadWelcomeCommand();
 
-assert.strictEqual(formatLearnerName(null), 'there');
-assert.strictEqual(formatLearnerName(' Alice '), 'Alice');
-assert.strictEqual(formatLearnerName('A\u0000B\nC'), 'ABC');
-assert.strictEqual(formatLearnerName('\u202Eevil\u2066'), 'evil');
-assert.strictEqual(formatLearnerName('A\u009BB'), 'AB');
-assert.strictEqual(formatLearnerName('zero\u200Dwidth'), 'zerowidth');
-assert.strictEqual(formatLearnerName('x'.repeat(100)).length, 80);
+  assert.strictEqual(formatLearnerName(null), 'there');
+  assert.strictEqual(formatLearnerName(' Alice '), 'Alice');
+  assert.strictEqual(formatLearnerName('A\u0000B\nC'), 'ABC');
+  assert.strictEqual(formatLearnerName('\u202Eevil\u2066'), 'evil');
+  assert.strictEqual(formatLearnerName('A\u009BB'), 'AB');
+  assert.strictEqual(formatLearnerName('zero\u200Dwidth'), 'zerowidth');
+  assert.strictEqual(formatLearnerName('x'.repeat(100)).length, 80);
 
-console.log('welcome name formatting tests passed.');
+  const Welcome = loadWelcomeCommand({
+    inquirer: { prompt: async () => ({ name: ' A\u0000lice ' }) }
+  });
+  const command = new Welcome();
+  const output = [];
+  command.log = value => output.push(value === undefined ? '' : String(value));
+  await command.run();
+  assert.ok(output.includes('Hello Alice! Thanks for taking 101 training today.'));
+
+  console.log('welcome name formatting tests passed.');
+}
+
+main().catch(error => {
+  console.error(error);
+  process.exitCode = 1;
+});

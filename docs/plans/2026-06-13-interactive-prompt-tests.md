@@ -1,6 +1,6 @@
 # Interactive Prompt Regression Tests
 
-status: planned
+status: completed
 
 ## Context
 
@@ -52,3 +52,26 @@ and prompted example choices are not exercised directly.
 - Do not run live Twilio authentication, API calls, package publication, or
   account mutations.
 - Do not regenerate README command output or oclif manifests.
+
+## Work Completed
+
+Extended the VM harnesses to inject prompt responses, executed both no-flag
+interactive command paths, and verified name sanitization, reviewed catalog
+selection, and clipboard opt-in without changing production commands.
+
+## Verification Completed
+
+- Node 22.22.2 and Node 24.16.0 each completed `npm ci --ignore-scripts` from
+  the exact lockfile.
+- Focused welcome/example tests, `npm test`, `npm run lint`, `npm run build`,
+  and all Make gates passed on Node 22 and Node 24.
+- `npm audit --audit-level=low` reported zero known vulnerabilities, and
+  `npm pack --dry-run` retained the reviewed eight package files.
+- The checker passed from an external working directory; package/lock/workflow
+  metadata and the README SVG parsed successfully.
+- Nine focused hostile mutations rejected weakened prompt injection, output,
+  clipboard, documentation, status, and evidence contracts.
+- `production command sources had no diff`.
+- `git diff --check` passed.
+- The `secret, real-phone-number, generated-artifact, and dependency-drift scan`
+  passed.
