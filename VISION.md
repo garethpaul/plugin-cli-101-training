@@ -33,6 +33,7 @@ Priority:
 - Strip bidirectional formatting controls from learner names before display
 - Strip all Unicode control and format characters from learner names before
   display
+- Keep learner-name truncation code-point-safe at the 80-character boundary
 - Keep the frozen example catalog limited to reviewed fake placeholders
 - Keep frozen example choices derived from the reviewed catalog
 - Keep unknown example keys from resolving to command output

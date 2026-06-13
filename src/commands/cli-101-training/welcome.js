@@ -10,7 +10,9 @@ function formatLearnerName(value) {
   const name = rawName
     .replace(UNICODE_CONTROL_OR_FORMAT_RE, '')
     .trim();
-  return (name || 'there').slice(0, LEARNER_NAME_MAX_LENGTH);
+  return Array.from(name || 'there')
+    .slice(0, LEARNER_NAME_MAX_LENGTH)
+    .join('');
 }
 
 class Welcome extends Command {

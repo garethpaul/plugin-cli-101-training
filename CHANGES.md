@@ -2,6 +2,8 @@
 
 ## 2026-06-13
 
+- Made the 80-character learner-name limit truncate by Unicode code points so
+  non-BMP characters are never split into lone surrogates.
 - Added VM-harness regression coverage for prompted welcome names and prompted
   example choices while preserving clipboard opt-in behavior.
 - Expanded learner-name terminal sanitization to remove all Unicode control
