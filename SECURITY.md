@@ -56,6 +56,8 @@ Learner names entered at prompts should be treated as display-only input and
 sanitized before terminal output. Strip Unicode control and format characters,
 including bidirectional formatting controls, so prompt input cannot visually
 reorder console text or issue terminal control sequences.
+Apply the learner-name display limit by Unicode code points so truncation cannot
+emit a lone surrogate at the terminal boundary.
 
 Keep `bin/run` as the executable launcher and avoid permission churn in
 packaging files, because broken launcher metadata can change how learners run

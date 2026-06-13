@@ -81,7 +81,8 @@ dependency graph has zero known audit findings.
 - Unknown example keys fail before any command text is printed or copied.
 - The welcome command trims learner names, strips all Unicode control and
   format characters (including bidirectional formatting controls), and caps
-  displayed names before echoing them.
+  displayed names at 80 Unicode code points without splitting non-BMP
+  characters into lone surrogates.
 - Keep `bin/run` as the executable launcher for Unix installs; `bin/run.cmd`
   remains the non-executable Windows wrapper.
 - Packaged launcher files stay included through the package `files` list.

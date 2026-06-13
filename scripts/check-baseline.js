@@ -22,6 +22,7 @@ const HOSTED_VALIDATION_PLAN = 'docs/plans/2026-06-10-hosted-node-validation.md'
 const OCLIF_TOOLCHAIN_PLAN = 'docs/plans/2026-06-12-oclif-development-toolchain.md';
 const UNICODE_CONTROL_PLAN = 'docs/plans/2026-06-13-unicode-control-name-sanitization.md';
 const INTERACTIVE_PROMPT_PLAN = 'docs/plans/2026-06-13-interactive-prompt-tests.md';
+const CODE_POINT_LIMIT_PLAN = 'docs/plans/2026-06-13-code-point-name-limit.md';
 const REQUIRED = [
   '.github/workflows/check.yml',
   '.gitignore',
@@ -53,6 +54,7 @@ const REQUIRED = [
   OCLIF_TOOLCHAIN_PLAN,
   UNICODE_CONTROL_PLAN,
   INTERACTIVE_PROMPT_PLAN,
+  CODE_POINT_LIMIT_PLAN,
   'scripts/check-baseline.js',
   'src/commands/cli-101-training/examples.js',
   'src/commands/cli-101-training/feedback.js',
@@ -253,6 +255,9 @@ function main() {
     'LEARNER_NAME_MAX_LENGTH = 80',
     'UNICODE_CONTROL_OR_FORMAT_RE = /[\\p{Cc}\\p{Cf}]/gu',
     "replace(UNICODE_CONTROL_OR_FORMAT_RE, '')",
+    "Array.from(name || 'there')",
+    '.slice(0, LEARNER_NAME_MAX_LENGTH)',
+    ".join('')",
     'module.exports.formatLearnerName'
   ]) {
     if (!welcome.includes(phrase)) {
@@ -261,7 +266,7 @@ function main() {
   }
 
   const welcomeTests = read('test_welcome_name_format.js');
-  for (const phrase of ["'A\\u009BB'", "'zero\\u200Dwidth'", "'zerowidth'", 'function loadWelcomeCommand(overrides = {})', "prompt: async () => ({ name: ' A\\u0000lice ' })", "output.includes('Hello Alice! Thanks for taking 101 training today.')"]) {
+  for (const phrase of ["'A\\u009BB'", "'zero\\u200Dwidth'", "'zerowidth'", 'codePointBoundaryName', "'x'.repeat(79)", "'😀'.repeat(100)", "Array.from(formatLearnerName('😀'.repeat(100))).length", 'function loadWelcomeCommand(overrides = {})', "prompt: async () => ({ name: ' A\\u0000lice ' })", "output.includes('Hello Alice! Thanks for taking 101 training today.')"]) {
     if (!welcomeTests.includes(phrase)) {
       failures.push(`welcome name tests must include ${phrase}`);
     }
@@ -345,6 +350,8 @@ function main() {
     'learner names',
     'bidirectional formatting controls',
     'Unicode control and format characters',
+    'Unicode code points',
+    'lone surrogate',
     'node test_welcome_name_format.js',
     'node test_examples_catalog.js',
     'node test_oclif_commands.js',
@@ -365,6 +372,17 @@ function main() {
   ]) {
     if (!docs.toLowerCase().includes(phrase.toLowerCase())) {
       failures.push(`docs must mention ${phrase}`);
+    }
+  }
+  const codePointClaims = {
+    'README.md': '80 Unicode code points without splitting non-BMP',
+    'SECURITY.md': 'display limit by Unicode code points',
+    'VISION.md': 'truncation code-point-safe at the 80-character boundary',
+    'CHANGES.md': 'truncate by Unicode code points'
+  };
+  for (const [file, phrase] of Object.entries(codePointClaims)) {
+    if (!read(file).includes(phrase)) {
+      failures.push(`${file} must include ${phrase}`);
     }
   }
 
@@ -512,6 +530,13 @@ function main() {
   for (const phrase of ['status: completed', 'Node 22', 'Node 24', 'npm test', 'hostile mutations rejected', 'production command sources had no diff', 'git diff --check', 'secret, real-phone-number, generated-artifact, and dependency-drift scan']) {
     if (!interactivePromptPlan.includes(phrase)) {
       failures.push(`interactive prompt plan must mention ${phrase}`);
+    }
+  }
+
+  const codePointLimitPlan = read(CODE_POINT_LIMIT_PLAN);
+  for (const phrase of ['status: completed', 'Node 22', 'Node 24', 'npm test', 'npm audit', 'npm pack --dry-run', 'hostile mutations', 'git diff --check', 'secret and generated-artifact scan']) {
+    if (!codePointLimitPlan.includes(phrase)) {
+      failures.push(`code-point name limit plan must mention ${phrase}`);
     }
   }
 
