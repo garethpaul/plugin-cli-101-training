@@ -92,6 +92,17 @@ upgrade.
 - Hosted run 27578645505 exposed that the raw low-threshold audit stopped both
   Ubuntu jobs before tests; the strict policy gate preserves the same full
   graph and threshold while allowing only the documented upstream blocker.
+- Exact-head push run 27578803689 and pull-request run 27578804977 passed both
+  Ubuntu jobs but exposed `spawnSync npm.cmd EINVAL` before policy evaluation
+  on Windows with Node 22 and 24. The audit runner now uses shell dispatch only
+  for the fixed Windows `npm.cmd audit --audit-level=low --json` invocation;
+  focused tests and the static contract require that platform boundary without
+  changing the accepted report.
+- On Node 22.22.2 and 24.16.0, the focused audit-policy test, complete package
+  gate, and live strict audit passed after the dispatch correction. The
+  external-directory `make check` and `npm pack --dry-run --ignore-scripts`
+  also passed on Node 22. Isolated runtime and static mutations that replaced
+  the Windows guard with unconditional direct spawning were both rejected.
 - `git diff --check` plus exact manifest and lock audits passed; secret and generated-artifact audits passed.
 
 ## Upstream Blocker
