@@ -59,11 +59,13 @@ const REQUIRED = [
   CODE_POINT_LIMIT_PLAN,
   UNICODE_SEPARATOR_PLAN,
   TRANSITIVE_ADVISORY_PLAN,
+  'scripts/check-audit.js',
   'scripts/check-baseline.js',
   'src/commands/cli-101-training/examples.js',
   'src/commands/cli-101-training/feedback.js',
   'src/commands/cli-101-training/welcome.js',
   'test_examples_catalog.js',
+  'test_audit_policy.js',
   'test_oclif_commands.js',
   'test_welcome_name_format.js'
 ];
@@ -133,7 +135,7 @@ function main() {
   if (pkg.scripts.check !== 'node scripts/check-baseline.js') {
     failures.push('package.json must expose npm run check');
   }
-  if (pkg.scripts.test !== 'npm run check && node test_welcome_name_format.js && node test_examples_catalog.js && node test_oclif_commands.js') {
+  if (pkg.scripts.test !== 'npm run check && node test_audit_policy.js && node test_welcome_name_format.js && node test_examples_catalog.js && node test_oclif_commands.js') {
     failures.push('npm test must run the static baseline, focused behavior tests, and installed oclif command smoke tests');
   }
   if (pkg.scripts.lint !== 'npm run check') {
@@ -165,10 +167,12 @@ function main() {
   }
 
   for (const jsFile of [
+    'scripts/check-audit.js',
     'scripts/check-baseline.js',
     'src/commands/cli-101-training/examples.js',
     'src/commands/cli-101-training/feedback.js',
     'src/commands/cli-101-training/welcome.js',
+    'test_audit_policy.js',
     'test_examples_catalog.js',
     'test_oclif_commands.js',
     'test_welcome_name_format.js'
@@ -310,7 +314,7 @@ function main() {
     'persist-credentials: false',
     'cache: npm',
     'run: npm ci --ignore-scripts',
-    'run: npm audit --audit-level=low',
+    'run: node scripts/check-audit.js',
     'run: npm test',
     'run: npm pack --dry-run'
   ]) {
@@ -335,9 +339,21 @@ function main() {
   if (/\bnpm install\b/.test(workflow) || (workflow.match(/npm ci --ignore-scripts/g) || []).length !== 1) {
     failures.push('Check workflow must install only from the lockfile with lifecycle scripts disabled');
   }
-  const auditRuns = [...workflow.matchAll(/^\s*run:\s*(npm audit\S*.*)$/gm)].map(match => match[1].trim());
-  if (JSON.stringify(auditRuns) !== JSON.stringify(['npm audit --audit-level=low']) || workflow.includes('npm audit --omit')) {
-    failures.push('Check workflow must run exactly one full-graph npm audit at the low-severity threshold');
+  if ((workflow.match(/node scripts\/check-audit\.js/g) || []).length !== 1 || /npm audit|--omit/.test(workflow)) {
+    failures.push('Check workflow must run exactly one reviewed full-graph dependency audit policy');
+  }
+  const auditPolicy = read('scripts/check-audit.js');
+  for (const phrase of [
+    "['audit', '--audit-level=low', '--json']",
+    "moderate: 5, high: 0, critical: 0, total: 5",
+    "'@oclif/core'",
+    "'@oclif/plugin-help'",
+    "'@oclif/plugin-plugins'",
+    "'@twilio/cli-core'",
+    "'js-yaml'",
+    'GHSA-h67p-54hq-rp68'
+  ]) {
+    if (!auditPolicy.includes(phrase)) failures.push(`dependency audit policy must keep ${phrase}`);
   }
   const forbiddenCi = ['Invoke-' + 'WebRequest', 'codecov' + '.io', 'bash ' + 'codecov.sh'];
   for (const forbidden of forbiddenCi) {
@@ -581,6 +597,7 @@ function main() {
     'safeDump',
     'npm ci --ignore-scripts',
     'npm audit --audit-level=low',
+    'node scripts/check-audit.js',
     'five moderate',
     'npm test',
     'make check',

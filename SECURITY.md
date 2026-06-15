@@ -77,11 +77,14 @@ the focused behavior tests, and validates package contents on Node 22 and Node
 8.3.4 while replacing the archived `@oclif/command` and `@oclif/config`
 packages. The maintained oclif utility CLI replaces `@oclif/dev-cli`; unused
 legacy test, lint, coverage, and glob packages are removed. The reviewed full
-production dependencies and development dependency graph reports zero known
-vulnerabilities. Reviewed root overrides resolve `form-data 4.0.6` and
-retain the direct Twilio and oclif host versions. A js-yaml upstream blocker
+production dependencies and development dependency graph have zero high or
+critical findings. Reviewed root overrides resolve `form-data 4.0.6` and retain
+the direct Twilio and oclif host versions.
+A js-yaml upstream blocker
 remains because the compatible oclif core line uses `js-yaml 3.14.2` and calls
-the removed `safeDump` API; the low-severity audit remains intentionally red.
+the removed `safeDump` API. The low-severity audit is enforced by a fail-closed
+JSON policy that permits only the exact five reviewed moderate records and
+rejects any new package, count, severity, advisory, or high/critical finding.
 
 Dependency updates should come from trusted package managers and should keep lockfiles in sync when lockfiles exist. Do not commit credentials, private keys, tokens, generated secrets, or machine-local configuration. If a vulnerability depends on a compromised package, typosquatting risk, insecure transitive dependency, or unsafe build step, include the package name, affected version, and the path through which it is used.
 

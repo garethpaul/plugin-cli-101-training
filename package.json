@@ -51,7 +51,7 @@
     "lint": "npm run check",
     "postpack": "node -e \"require('fs').rmSync('oclif.manifest.json', {force: true})\"",
     "prepack": "oclif manifest && oclif readme",
-    "test": "npm run check && node test_welcome_name_format.js && node test_examples_catalog.js && node test_oclif_commands.js",
+    "test": "npm run check && node test_audit_policy.js && node test_welcome_name_format.js && node test_examples_catalog.js && node test_oclif_commands.js",
     "version": "oclif readme && git add README.md"
   },
   "devDependencies": {

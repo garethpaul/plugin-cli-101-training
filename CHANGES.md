@@ -6,6 +6,8 @@
   terminal output.
 - Overrode vulnerable `form-data` with 4.0.6 and documented the remaining
   js-yaml upstream blocker without breaking the Twilio/oclif host contract.
+- Kept hosted dependency audits fail-closed while allowing only the exact
+  reviewed moderate js-yaml advisory chain that is blocked upstream.
 
 ## 2026-06-13
 

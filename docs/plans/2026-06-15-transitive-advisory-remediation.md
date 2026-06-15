@@ -36,7 +36,8 @@ upgrade.
 
 - Do not upgrade `@oclif/core`, `@twilio/cli-core`, command APIs, prompts,
   examples, clipboard behavior, or runtime output.
-- Do not use `npm audit fix --force` or weaken the zero-finding audit.
+- Do not use `npm audit fix --force`. Keep a full-graph low-threshold audit and
+  fail closed unless its JSON matches the exact reviewed upstream blocker.
 
 ## Verification
 
@@ -65,12 +66,18 @@ upgrade.
 - Regenerated the exact lock and required the patched form-data plus compatible
   nested js-yaml versions in the static baseline.
 - Updated dependency-risk guidance and completed-plan contracts.
+- Added a cross-platform audit-policy gate that accepts only the exact five
+  moderate records tied to GHSA-h67p-54hq-rp68 and rejects any changed package,
+  count, severity, advisory, malformed output, or high/critical finding.
 
 ## Verification Completed
 
 - `npm ci --ignore-scripts` reproduced the 496-package graph from the lock.
 - `npm audit --audit-level=low` confirms the high form-data finding is closed
   and reports five moderate js-yaml findings that remain blocked upstream.
+- `node scripts/check-audit.js` passed against that exact JSON report, and its
+  focused test rejected new-high, changed-advisory, additional inherited
+  advisory, and missing-package reports.
 - Installed-path verification retained form-data 4.0.6 and js-yaml 3.14.2;
   directly invoking the host's `safeDump` call against js-yaml 4 reproduced the
   removed-API failure.
@@ -78,9 +85,13 @@ upgrade.
   launcher and command smoke tests.
 - The complete gate passed from an external working directory through the
   absolute Makefile path, and `npm pack --dry-run` preserved reviewed contents.
-- Five isolated hostile mutations were rejected for removed overrides,
-  vulnerable lock restoration, weakened audit policy, missing guidance, and a
-  falsely completed plan status.
+- Ten isolated hostile mutations were rejected across override removal,
+  vulnerable lock restoration, workflow bypass, broadened severity acceptance,
+  advisory replacement, focused-test removal, missing guidance, and a falsely
+  completed plan status.
+- Hosted run 27578645505 exposed that the raw low-threshold audit stopped both
+  Ubuntu jobs before tests; the strict policy gate preserves the same full
+  graph and threshold while allowing only the documented upstream blocker.
 - `git diff --check` plus exact manifest and lock audits passed; secret and generated-artifact audits passed.
 
 ## Upstream Blocker
@@ -90,6 +101,6 @@ upgrade.
 - The latest oclif core 1.x release depends on js-yaml 3.x and invokes
   `safeDump`; js-yaml 4.2.0 replaces that API with a throwing compatibility
   stub.
-- No js-yaml 3.x patched release exists. The full low-severity audit must remain
-  enabled and red until the Twilio/oclif host line migrates or publishes a
-  compatible fix.
+- No js-yaml 3.x patched release exists. The full low-severity audit remains
+  enabled through a strict JSON policy gate until the Twilio/oclif host line
+  migrates or publishes a compatible fix.
