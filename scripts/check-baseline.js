@@ -23,6 +23,8 @@ const OCLIF_TOOLCHAIN_PLAN = 'docs/plans/2026-06-12-oclif-development-toolchain.
 const UNICODE_CONTROL_PLAN = 'docs/plans/2026-06-13-unicode-control-name-sanitization.md';
 const INTERACTIVE_PROMPT_PLAN = 'docs/plans/2026-06-13-interactive-prompt-tests.md';
 const CODE_POINT_LIMIT_PLAN = 'docs/plans/2026-06-13-code-point-name-limit.md';
+const UNICODE_SEPARATOR_PLAN = 'docs/plans/2026-06-15-unicode-line-separator-name-sanitization.md';
+const TRANSITIVE_ADVISORY_PLAN = 'docs/plans/2026-06-15-transitive-advisory-remediation.md';
 const REQUIRED = [
   '.github/workflows/check.yml',
   '.gitignore',
@@ -55,6 +57,8 @@ const REQUIRED = [
   UNICODE_CONTROL_PLAN,
   INTERACTIVE_PROMPT_PLAN,
   CODE_POINT_LIMIT_PLAN,
+  UNICODE_SEPARATOR_PLAN,
+  TRANSITIVE_ADVISORY_PLAN,
   'scripts/check-baseline.js',
   'src/commands/cli-101-training/examples.js',
   'src/commands/cli-101-training/feedback.js',
@@ -107,6 +111,9 @@ function main() {
   if (JSON.stringify(pkg.devDependencies) !== JSON.stringify({ oclif: '^4.23.14' })) {
     failures.push('package.json must keep only the maintained oclif utility CLI as a direct development dependency');
   }
+  if (JSON.stringify(pkg.overrides) !== JSON.stringify({ 'form-data': '4.0.6' })) {
+    failures.push('package.json must pin the reviewed form-data advisory override');
+  }
   for (const dependency of ['@oclif/command', '@oclif/config', '@oclif/dev-cli', '@oclif/test', '@twilio/cli-test', 'chai', 'eslint', 'eslint-config-oclif', 'globby', 'mocha', 'nyc']) {
     if (pkg.dependencies?.[dependency] || pkg.devDependencies?.[dependency]) {
       failures.push(`package.json must not restore unused legacy development dependency ${dependency}`);
@@ -115,6 +122,13 @@ function main() {
   const lock = JSON.parse(read('package-lock.json'));
   if (lock.lockfileVersion !== 3 || lock.packages?.['']?.dependencies?.['@oclif/core'] !== '^1.26.2' || lock.packages?.['']?.dependencies?.['@twilio/cli-core'] !== '^8.3.4' || lock.packages?.['']?.dependencies?.inquirer !== '^8.2.7' || lock.packages?.['']?.devDependencies?.oclif !== '^4.23.14') {
     failures.push('package-lock.json must preserve the reviewed lockfileVersion 3 dependency graph');
+  }
+  if (
+    lock.packages?.['node_modules/form-data']?.version !== '4.0.6' ||
+    lock.packages?.['node_modules/@oclif/core/node_modules/js-yaml']?.version !== '3.14.2' ||
+    lock.packages?.['node_modules/@twilio/cli-core/node_modules/js-yaml']?.version !== '3.14.2'
+  ) {
+    failures.push('package-lock.json must patch form-data while preserving compatible oclif js-yaml releases');
   }
   if (pkg.scripts.check !== 'node scripts/check-baseline.js') {
     failures.push('package.json must expose npm run check');
@@ -253,8 +267,8 @@ function main() {
   for (const phrase of [
     'function formatLearnerName',
     'LEARNER_NAME_MAX_LENGTH = 80',
-    'UNICODE_CONTROL_OR_FORMAT_RE = /[\\p{Cc}\\p{Cf}]/gu',
-    "replace(UNICODE_CONTROL_OR_FORMAT_RE, '')",
+    'UNSAFE_TERMINAL_NAME_RE = /[\\p{Cc}\\p{Cf}\\p{Zl}\\p{Zp}]/gu',
+    "replace(UNSAFE_TERMINAL_NAME_RE, '')",
     "Array.from(name || 'there')",
     '.slice(0, LEARNER_NAME_MAX_LENGTH)',
     ".join('')",
@@ -266,7 +280,7 @@ function main() {
   }
 
   const welcomeTests = read('test_welcome_name_format.js');
-  for (const phrase of ["'A\\u009BB'", "'zero\\u200Dwidth'", "'zerowidth'", 'codePointBoundaryName', "'x'.repeat(79)", "'😀'.repeat(100)", "Array.from(formatLearnerName('😀'.repeat(100))).length", 'function loadWelcomeCommand(overrides = {})', "prompt: async () => ({ name: ' A\\u0000lice ' })", "output.includes('Hello Alice! Thanks for taking 101 training today.')"]) {
+  for (const phrase of ["'A\\u009BB'", "'zero\\u200Dwidth'", "'zerowidth'", "'line\\u2028separator'", "'paragraph\\u2029separator'", "name: 'Line\\u2028and\\u2029paragraph'", "output.includes('Hello Alice! Thanks for taking 101 training today.')", "separatorOutput.includes('Hello Lineandparagraph! Thanks for taking 101 training today.')", 'codePointBoundaryName', "'x'.repeat(79)", "'😀'.repeat(100)", "Array.from(formatLearnerName('😀'.repeat(100))).length", 'function loadWelcomeCommand(overrides = {})', "prompt: async () => ({ name: ' A\\u0000lice ' })"]) {
     if (!welcomeTests.includes(phrase)) {
       failures.push(`welcome name tests must include ${phrase}`);
     }
@@ -350,6 +364,7 @@ function main() {
     'learner names',
     'bidirectional formatting controls',
     'Unicode control and format characters',
+    'Unicode line and paragraph separators',
     'Unicode code points',
     'lone surrogate',
     'node test_welcome_name_format.js',
@@ -364,6 +379,8 @@ function main() {
     'full dependency graph',
     'Twilio CLI Core 8.3.4',
     'reviewed lockfile',
+    'form-data 4.0.6',
+    'js-yaml upstream blocker',
     'production dependencies',
     'executable launcher',
     'packaged launcher files',
@@ -537,6 +554,64 @@ function main() {
   for (const phrase of ['status: completed', 'Node 22', 'Node 24', 'npm test', 'npm audit', 'npm pack --dry-run', 'hostile mutations', 'git diff --check', 'secret and generated-artifact scan']) {
     if (!codePointLimitPlan.includes(phrase)) {
       failures.push(`code-point name limit plan must mention ${phrase}`);
+    }
+  }
+
+  const unicodeSeparatorPlan = read(UNICODE_SEPARATOR_PLAN);
+  const unicodeSeparatorStatus = [...unicodeSeparatorPlan.matchAll(/^status:\s*(.+?)\s*$/gmi)].map(match => match[1]);
+  const unicodeSeparatorWork = markdownSection(unicodeSeparatorPlan, 'Work Completed');
+  const unicodeSeparatorVerification = markdownSection(unicodeSeparatorPlan, 'Verification Completed');
+  if (unicodeSeparatorStatus.length !== 1 || unicodeSeparatorStatus[0] !== 'completed' || !unicodeSeparatorWork) {
+    failures.push('Unicode separator plan must record one completed status and completed work');
+  }
+
+  const transitiveAdvisoryPlan = read(TRANSITIVE_ADVISORY_PLAN);
+  const transitiveAdvisoryStatus = [...transitiveAdvisoryPlan.matchAll(/^status:\s*(.+?)\s*$/gmi)].map(match => match[1]);
+  const transitiveAdvisoryWork = markdownSection(transitiveAdvisoryPlan, 'Work Completed');
+  const transitiveAdvisoryVerification = markdownSection(transitiveAdvisoryPlan, 'Verification Completed');
+  if (transitiveAdvisoryStatus.length !== 1 || transitiveAdvisoryStatus[0] !== 'blocked_upstream' || !transitiveAdvisoryWork) {
+    failures.push('transitive advisory plan must record one upstream-blocked status and completed work');
+  }
+  if (!transitiveAdvisoryVerification || /\b(?:pending|todo|tbd|not run)\b/i.test(transitiveAdvisoryVerification)) {
+    failures.push('transitive advisory plan must record finished verification without pending markers');
+  }
+  for (const evidence of [
+    'form-data 4.0.6',
+    'js-yaml 3.14.2',
+    'safeDump',
+    'npm ci --ignore-scripts',
+    'npm audit --audit-level=low',
+    'five moderate',
+    'npm test',
+    'make check',
+    'external working directory',
+    'npm pack --dry-run',
+    'hostile mutations',
+    'git diff --check',
+    'secret and generated-artifact audits'
+  ]) {
+    if (!transitiveAdvisoryVerification.includes(evidence)) {
+      failures.push(`transitive advisory verification must mention ${evidence}`);
+    }
+  }
+  if (!unicodeSeparatorVerification || /\b(?:pending|todo|tbd|not run)\b/i.test(unicodeSeparatorVerification)) {
+    failures.push('Unicode separator plan must record finished verification without pending markers');
+  }
+  for (const evidence of [
+    'node test_welcome_name_format.js',
+    'npm test',
+    'npm run lint',
+    'npm run build',
+    'make check',
+    'external working directory',
+    'npm audit',
+    'npm pack --dry-run',
+    'hostile mutations',
+    'git diff --check',
+    'secret and generated-artifact audits'
+  ]) {
+    if (!unicodeSeparatorVerification.includes(evidence)) {
+      failures.push(`Unicode separator verification must mention ${evidence}`);
     }
   }
 

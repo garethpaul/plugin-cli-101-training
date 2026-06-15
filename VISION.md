@@ -33,8 +33,14 @@ Priority:
 - Strip bidirectional formatting controls from learner names before display
 - Strip all Unicode control and format characters from learner names before
   display
+- Strip Unicode line and paragraph separators from learner names before
+  terminal display
 - Keep learner-name truncation code-point-safe at the 80-character boundary
 - Keep the frozen example catalog limited to reviewed fake placeholders
+- Keep the `form-data 4.0.6` transitive advisory override until Twilio CLI Core
+  absorbs the patched range
+- Track the js-yaml upstream blocker without overriding the oclif core 1.x
+  `safeDump` compatibility boundary or weakening the low-severity audit
 - Keep frozen example choices derived from the reviewed catalog
 - Keep unknown example keys from resolving to command output
 - Keep interactive welcome and example prompt paths covered without live Twilio

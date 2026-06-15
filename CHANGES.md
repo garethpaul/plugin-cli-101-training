@@ -1,5 +1,12 @@
 # Changes
 
+## 2026-06-15
+
+- Removed Unicode line and paragraph separators from learner names before
+  terminal output.
+- Overrode vulnerable `form-data` with 4.0.6 and documented the remaining
+  js-yaml upstream blocker without breaking the Twilio/oclif host contract.
+
 ## 2026-06-13
 
 - Made the 80-character learner-name limit truncate by Unicode code points so

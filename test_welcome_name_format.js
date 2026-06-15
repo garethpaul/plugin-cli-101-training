@@ -50,6 +50,8 @@ async function main() {
   assert.strictEqual(formatLearnerName('\u202Eevil\u2066'), 'evil');
   assert.strictEqual(formatLearnerName('A\u009BB'), 'AB');
   assert.strictEqual(formatLearnerName('zero\u200Dwidth'), 'zerowidth');
+  assert.strictEqual(formatLearnerName('line\u2028separator'), 'lineseparator');
+  assert.strictEqual(formatLearnerName('paragraph\u2029separator'), 'paragraphseparator');
   assert.strictEqual(formatLearnerName('x'.repeat(100)).length, 80);
   const codePointBoundaryName = `${'x'.repeat(79)}😀trailing`;
   assert.strictEqual(formatLearnerName(codePointBoundaryName), `${'x'.repeat(79)}😀`);
@@ -63,6 +65,16 @@ async function main() {
   command.log = value => output.push(value === undefined ? '' : String(value));
   await command.run();
   assert.ok(output.includes('Hello Alice! Thanks for taking 101 training today.'));
+
+  const SeparatorWelcome = loadWelcomeCommand({
+    inquirer: { prompt: async () => ({ name: 'Line\u2028and\u2029paragraph' }) }
+  });
+  const separatorCommand = new SeparatorWelcome();
+  const separatorOutput = [];
+  separatorCommand.log = value => separatorOutput.push(value === undefined ? '' : String(value));
+  await separatorCommand.run();
+  assert.ok(separatorOutput.includes('Hello Lineandparagraph! Thanks for taking 101 training today.'));
+  assert.ok(separatorOutput.every(line => !/[\u2028\u2029]/u.test(line)));
 
   console.log('welcome name formatting tests passed.');
 }

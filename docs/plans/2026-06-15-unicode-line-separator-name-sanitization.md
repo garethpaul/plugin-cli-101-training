@@ -1,6 +1,6 @@
 # Unicode Line Separator Name Sanitization
 
-status: in_progress
+status: completed
 
 ## Context
 
@@ -75,3 +75,25 @@ hostile mutations, audit, lockfile, and artifact checks pass.
   preserving them as visible spacing.
 - The plugin remains on its current Twilio-compatible oclif dependency line.
 - This change must remain stacked on PR #4 and follow base-first merge order.
+
+## Work Completed
+
+- Extended learner-name terminal sanitization from Unicode control and format
+  characters to line and paragraph separators.
+- Added direct U+2028/U+2029 formatter cases and an interactive single-line
+  greeting regression while preserving fallback and code-point truncation.
+- Added static source, test, documentation, and completed-plan contracts.
+
+## Verification Completed
+
+- `node test_welcome_name_format.js`, `npm test`, `npm run lint`, and
+  `npm run build` passed on Node 22.
+- `make check` passed from the repository root and an external working directory
+  through the absolute Makefile path.
+- `npm pack --dry-run` preserved the reviewed package contents. The unchanged
+  `npm audit --audit-level=low` gate exposed a separate js-yaml upstream blocker
+  recorded in `docs/plans/2026-06-15-transitive-advisory-remediation.md`.
+- Six isolated hostile mutations were rejected for missing `Zl`, missing `Zp`,
+  removed helper fixtures, removed interactive coverage, missing guidance, and
+  reopened plan status.
+- `git diff --check` plus exact diff and lockfile audits passed; secret and generated-artifact audits passed.

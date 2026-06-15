@@ -1,6 +1,6 @@
 # Transitive Advisory Remediation
 
-status: in_progress
+status: blocked_upstream
 
 ## Context
 
@@ -13,8 +13,10 @@ upgrade.
 
 ## Requirements
 
-- Resolve the transitive graph to patched `form-data` and `js-yaml` releases
-  without changing direct Twilio or oclif host contracts.
+- Resolve the high-severity `form-data` advisory without changing direct Twilio
+  or oclif host contracts.
+- Investigate the moderate `js-yaml` advisory and preserve the host contract if
+  no compatible patched release exists.
 - Keep the exact lock reproducible and require the override contract in the
   static checker.
 - Prove the full Node 22 command, prompt, launcher, package, and audit gates
@@ -23,9 +25,8 @@ upgrade.
 
 ## Approach
 
-- Use npm root overrides for the two vulnerable transitive packages because
-  their direct parents do not yet constrain patched versions into the current
-  lock.
+- Use an npm root override for vulnerable `form-data` because its direct parent
+  does not yet constrain the patched release into the current lock.
 - Regenerate only `package-lock.json`, reinstall from that lock, and inspect
   the resolved dependency paths.
 - Reject the change if installed oclif command smoke tests or package dry runs
@@ -53,3 +54,42 @@ upgrade.
   full installed launcher and command tests are required before acceptance.
 - This remediation is validation-blocking follow-up work on the same stacked PR
   as the Unicode separator fix discovered immediately before the audit failure.
+
+## Work Completed
+
+- Added an exact root override for `form-data 4.0.6` while preserving direct
+  Twilio and oclif dependency versions.
+- Confirmed that official oclif core 1.x requires `js-yaml 3.14.2` and calls
+  `safeDump`, which throws under js-yaml 4; no patched 3.x backport or newer
+  compatible Twilio CLI Core release exists.
+- Regenerated the exact lock and required the patched form-data plus compatible
+  nested js-yaml versions in the static baseline.
+- Updated dependency-risk guidance and completed-plan contracts.
+
+## Verification Completed
+
+- `npm ci --ignore-scripts` reproduced the 496-package graph from the lock.
+- `npm audit --audit-level=low` confirms the high form-data finding is closed
+  and reports five moderate js-yaml findings that remain blocked upstream.
+- Installed-path verification retained form-data 4.0.6 and js-yaml 3.14.2;
+  directly invoking the host's `safeDump` call against js-yaml 4 reproduced the
+  removed-API failure.
+- `npm test` and `make check` passed on Node 22, including installed oclif
+  launcher and command smoke tests.
+- The complete gate passed from an external working directory through the
+  absolute Makefile path, and `npm pack --dry-run` preserved reviewed contents.
+- Five isolated hostile mutations were rejected for removed overrides,
+  vulnerable lock restoration, weakened audit policy, missing guidance, and a
+  falsely completed plan status.
+- `git diff --check` plus exact manifest and lock audits passed; secret and generated-artifact audits passed.
+
+## Upstream Blocker
+
+- `@twilio/cli-core@8.3.4` is the latest release and still depends on oclif core
+  1.x packages.
+- The latest oclif core 1.x release depends on js-yaml 3.x and invokes
+  `safeDump`; js-yaml 4.2.0 replaces that API with a throwing compatibility
+  stub.
+- No js-yaml 3.x patched release exists. The full low-severity audit must remain
+  enabled and red until the Twilio/oclif host line migrates or publishes a
+  compatible fix.

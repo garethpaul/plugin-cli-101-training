@@ -63,7 +63,9 @@ Use `npm ci --ignore-scripts` with the reviewed lockfile for reproducible
 contributor and CI installs.
 The dependency-free focused tests can run before installation, while full
 launcher and package validation use the committed lockfile. The reviewed full
-dependency graph has zero known audit findings.
+dependency graph has zero known audit findings. Root overrides keep the current
+Twilio/oclif host contract while resolving `form-data 4.0.6`. A js-yaml upstream blocker remains: the host requires oclif core 1.x and `js-yaml 3.14.2`, while
+js-yaml 4 removes the `safeDump` API still used by that host line.
 
 ## Running or Using the Project
 
@@ -80,8 +82,8 @@ dependency graph has zero known audit findings.
 - Frozen example choices keep prompt options aligned with the reviewed catalog.
 - Unknown example keys fail before any command text is printed or copied.
 - The welcome command trims learner names, strips all Unicode control and
-  format characters (including bidirectional formatting controls), and caps
-  displayed names at 80 Unicode code points without splitting non-BMP
+  format characters (including bidirectional formatting controls) plus Unicode
+  line and paragraph separators, and caps displayed names at 80 Unicode code points without splitting non-BMP
   characters into lone surrogates.
 - Keep `bin/run` as the executable launcher for Unix installs; `bin/run.cmd`
   remains the non-executable Windows wrapper.

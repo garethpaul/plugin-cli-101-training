@@ -55,7 +55,8 @@ Unknown example keys should fail before command text is printed or copied.
 Learner names entered at prompts should be treated as display-only input and
 sanitized before terminal output. Strip Unicode control and format characters,
 including bidirectional formatting controls, so prompt input cannot visually
-reorder console text or issue terminal control sequences.
+reorder console text or issue terminal control sequences. Strip Unicode line
+and paragraph separators so display-only names cannot add terminal lines.
 Apply the learner-name display limit by Unicode code points so truncation cannot
 emit a lone surrogate at the terminal boundary.
 
@@ -77,7 +78,10 @@ the focused behavior tests, and validates package contents on Node 22 and Node
 packages. The maintained oclif utility CLI replaces `@oclif/dev-cli`; unused
 legacy test, lint, coverage, and glob packages are removed. The reviewed full
 production dependencies and development dependency graph reports zero known
-vulnerabilities.
+vulnerabilities. Reviewed root overrides resolve `form-data 4.0.6` and
+retain the direct Twilio and oclif host versions. A js-yaml upstream blocker
+remains because the compatible oclif core line uses `js-yaml 3.14.2` and calls
+the removed `safeDump` API; the low-severity audit remains intentionally red.
 
 Dependency updates should come from trusted package managers and should keep lockfiles in sync when lockfiles exist. Do not commit credentials, private keys, tokens, generated secrets, or machine-local configuration. If a vulnerability depends on a compromised package, typosquatting risk, insecure transitive dependency, or unsafe build step, include the package name, affected version, and the path through which it is used.
 
