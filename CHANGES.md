@@ -1,5 +1,13 @@
 # Changes
 
+## 2026-06-17
+
+- Raised the Node 22 compatibility floor to 22.13, the first release that loads
+  the Twilio/oclif host's ESM-only Octokit dependency without an opt-in flag or
+  an experimental warning.
+- Pinned the hosted Node 22 lane to 22.13.0 so CI tests the declared floor instead
+  of silently floating to a newer compatible patch.
+
 ## 2026-06-15
 
 - Removed Unicode line and paragraph separators from learner names before

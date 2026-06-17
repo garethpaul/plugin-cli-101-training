@@ -25,6 +25,7 @@ const INTERACTIVE_PROMPT_PLAN = 'docs/plans/2026-06-13-interactive-prompt-tests.
 const CODE_POINT_LIMIT_PLAN = 'docs/plans/2026-06-13-code-point-name-limit.md';
 const UNICODE_SEPARATOR_PLAN = 'docs/plans/2026-06-15-unicode-line-separator-name-sanitization.md';
 const TRANSITIVE_ADVISORY_PLAN = 'docs/plans/2026-06-15-transitive-advisory-remediation.md';
+const NODE_REQUIRE_ESM_PLAN = 'docs/plans/2026-06-17-node-require-esm-floor.md';
 const REQUIRED = [
   '.github/workflows/check.yml',
   '.gitignore',
@@ -59,6 +60,7 @@ const REQUIRED = [
   CODE_POINT_LIMIT_PLAN,
   UNICODE_SEPARATOR_PLAN,
   TRANSITIVE_ADVISORY_PLAN,
+  NODE_REQUIRE_ESM_PLAN,
   'scripts/check-audit.js',
   'scripts/check-baseline.js',
   'src/commands/cli-101-training/examples.js',
@@ -104,8 +106,8 @@ function main() {
   failIfMissing(failures);
 
   const pkg = JSON.parse(read('package.json'));
-  if (pkg.engines?.node !== '>=22.0.0' || read('.nvmrc').trim() !== '24') {
-    failures.push('package metadata must require Node 22+ and .nvmrc must select Node 24');
+  if (pkg.engines?.node !== '>=22.13.0' || read('.nvmrc').trim() !== '24') {
+    failures.push('package metadata must require Node 22.13+ and .nvmrc must select Node 24');
   }
   if (pkg.dependencies['@oclif/core'] !== '^1.26.2' || pkg.dependencies['@twilio/cli-core'] !== '^8.3.4' || pkg.dependencies.inquirer !== '^8.2.7') {
     failures.push('package.json must keep the reviewed oclif, Twilio CLI Core, and Inquirer compatibility set');
@@ -122,7 +124,7 @@ function main() {
     }
   }
   const lock = JSON.parse(read('package-lock.json'));
-  if (lock.lockfileVersion !== 3 || lock.packages?.['']?.dependencies?.['@oclif/core'] !== '^1.26.2' || lock.packages?.['']?.dependencies?.['@twilio/cli-core'] !== '^8.3.4' || lock.packages?.['']?.dependencies?.inquirer !== '^8.2.7' || lock.packages?.['']?.devDependencies?.oclif !== '^4.23.14') {
+  if (lock.lockfileVersion !== 3 || lock.packages?.['']?.engines?.node !== '>=22.13.0' || lock.packages?.['']?.dependencies?.['@oclif/core'] !== '^1.26.2' || lock.packages?.['']?.dependencies?.['@twilio/cli-core'] !== '^8.3.4' || lock.packages?.['']?.dependencies?.inquirer !== '^8.2.7' || lock.packages?.['']?.devDependencies?.oclif !== '^4.23.14') {
     failures.push('package-lock.json must preserve the reviewed lockfileVersion 3 dependency graph');
   }
   if (
@@ -310,7 +312,7 @@ function main() {
     'timeout-minutes: 10',
     'actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10',
     'actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e',
-    'node-version: [22, 24]',
+    "node-version: ['22.13.0', '24']",
     'persist-credentials: false',
     'cache: npm',
     'run: npm ci --ignore-scripts',
@@ -588,6 +590,13 @@ function main() {
   const transitiveAdvisoryVerification = markdownSection(transitiveAdvisoryPlan, 'Verification Completed');
   if (transitiveAdvisoryStatus.length !== 1 || transitiveAdvisoryStatus[0] !== 'blocked_upstream' || !transitiveAdvisoryWork) {
     failures.push('transitive advisory plan must record one upstream-blocked status and completed work');
+  }
+
+  const nodeRequireEsmPlan = read(NODE_REQUIRE_ESM_PLAN);
+  for (const phrase of ['status: hosted_pending', 'Node 22.11.0', 'Node 22.13.0', 'ERR_REQUIRE_ESM', 'npm test', 'npm pack --dry-run']) {
+    if (!nodeRequireEsmPlan.includes(phrase)) {
+      failures.push(`Node require(esm) floor plan must mention ${phrase}`);
+    }
   }
   if (!transitiveAdvisoryVerification || /\b(?:pending|todo|tbd|not run)\b/i.test(transitiveAdvisoryVerification)) {
     failures.push('transitive advisory plan must record finished verification without pending markers');

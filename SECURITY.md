@@ -70,8 +70,9 @@ match the reviewed local launcher behavior.
 
 Pinned, read-only hosted Linux and Windows validation uses the committed
 lockfile with lifecycle scripts disabled, audits the full dependency graph, runs
-the focused behavior tests, and validates package contents on Node 22 and Node
-24. It does not retain checkout credentials or use Twilio credentials.
+the focused behavior tests, and validates package contents on the exact Node
+22.13 compatibility floor and Node 24. It does not retain checkout credentials
+or use Twilio credentials.
 
 `@oclif/core` 1.26.2 preserves the host contract required by Twilio CLI Core
 8.3.4 while replacing the archived `@oclif/command` and `@oclif/config`

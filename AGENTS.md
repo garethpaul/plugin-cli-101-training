@@ -29,7 +29,7 @@
 ## Coding conventions
 
 - Language mix noted in the README: JavaScript (3).
-- Use Node >=22.0.0 for package scripts; `.nvmrc` selects Node 24 for local maintenance.
+- Use Node >=22.13.0 for package scripts; `.nvmrc` selects Node 24 for local maintenance.
 
 ## Testing guidance
 

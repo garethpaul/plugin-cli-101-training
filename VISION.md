@@ -20,7 +20,7 @@ The current focus is:
 Priority:
 
 - Keep the dependency-free baseline running on pinned hosted Linux and Windows
-  with maintained Node 22 and Node 24
+  with the exact Node 22.13 compatibility floor and maintained Node 24
 - Keep the locked full dependency graph free of known audit findings
 
 - Preserve the `cli-101-training` command namespace
