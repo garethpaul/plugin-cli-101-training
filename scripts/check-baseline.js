@@ -593,7 +593,7 @@ function main() {
   }
 
   const nodeRequireEsmPlan = read(NODE_REQUIRE_ESM_PLAN);
-  for (const phrase of ['status: hosted_pending', 'Node 22.11.0', 'Node 22.13.0', 'ERR_REQUIRE_ESM', 'npm test', 'npm pack --dry-run']) {
+  for (const phrase of ['status: completed', 'Node 22.11.0', 'Node 22.13.0', 'ERR_REQUIRE_ESM', 'npm test', 'npm pack --dry-run', '27664317402', '27664325793']) {
     if (!nodeRequireEsmPlan.includes(phrase)) {
       failures.push(`Node require(esm) floor plan must mention ${phrase}`);
     }

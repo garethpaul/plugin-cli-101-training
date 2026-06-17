@@ -1,6 +1,6 @@
 # Node require(esm) Compatibility Floor
 
-status: hosted_pending
+status: completed
 
 ## Context
 
@@ -72,4 +72,6 @@ experimental warning by default in Node 22.13.0.
 - Passed `npm pack --dry-run`; the package retained the reviewed eight-file
   contents and removed its generated manifest afterward.
 - The complete `npm test`, Make aliases, and repository scans passed locally.
-  Exact-head hosted Node 22.13.0 and Node 24 evidence remains to be recorded.
+- Exact-head push run 27664317402 and pull-request run 27664325793 passed all
+  eight Ubuntu and Windows jobs on Node 22.13.0 and Node 24 at commit
+  `04fd7d40f252549683b1e41516ad99e6125438b3`.
