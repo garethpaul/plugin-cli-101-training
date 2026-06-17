@@ -1,6 +1,6 @@
 # Grapheme-Safe Learner Name Limit
 
-status: planned
+status: completed
 
 ## Problem
 
@@ -40,7 +40,8 @@ interactive-path assertions.
 ### U3. Contracts and guidance
 
 **Files:** `scripts/check-baseline.js`, `README.md`, `SECURITY.md`, `VISION.md`,
-`CHANGES.md`, `docs/plans/2026-06-17-grapheme-safe-name-limit.md`
+`CHANGES.md`, `AGENTS.md`,
+`docs/plans/2026-06-17-grapheme-safe-name-limit.md`
 
 Protect the segmenter configuration, segment extraction, boundary tests,
 guidance, and completed plan evidence against isolated hostile mutations.
@@ -71,3 +72,29 @@ guidance, and completed plan evidence against isolated hostile mutations.
 - Format controls are removed before segmentation, so joined emoji sequences
   remain outside this narrow change.
 - This change is stacked on PR #6, which must remain open and merge first.
+
+## Work Completed
+
+- Added a locale-neutral `Intl.Segmenter` with grapheme granularity and applied
+  the existing 80-character limit to complete segments after sanitization.
+- Added exact flag and combining-mark boundary regressions while preserving the
+  existing surrogate, terminal-control, separator, and interactive-path tests.
+- Extended the dependency-free checker and synchronized repository, security,
+  vision, changelog, and agent guidance.
+
+## Verification Completed
+
+- `node test_welcome_name_format.js`, `npm test`, and every Make alias including
+  `make check` passed on Node 22.22.2 and Node 24.16.0.
+- The absolute Makefile gate passed from an external working directory.
+- Fresh `npm ci --ignore-scripts` installs completed on Node 22.22.2 and Node
+  24.16.0 from the committed lockfile;
+  `npm audit` output matched the exact reviewed advisory policy through
+  `node scripts/check-audit.js`.
+- `npm pack --dry-run` completed with the intended package files.
+- Six isolated hostile mutations were rejected: segmenter granularity, segment
+  extraction, truncation length, flag regression, guidance, and completed plan
+  status.
+- `git diff --check` plus generated-artifact, secret, conflict-marker, binary,
+  size, and mode audits passed.
+- Live Twilio authentication, API calls, and publication were not exercised.

@@ -2,6 +2,8 @@
 
 ## 2026-06-17
 
+- Made the 80-character learner-name limit truncate by grapheme clusters so
+  flags and combining sequences remain intact at the boundary.
 - Raised the Node 22 compatibility floor to 22.13, the first release that loads
   the Twilio/oclif host's ESM-only Octokit dependency without an opt-in flag or
   an experimental warning.

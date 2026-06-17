@@ -26,6 +26,7 @@ const CODE_POINT_LIMIT_PLAN = 'docs/plans/2026-06-13-code-point-name-limit.md';
 const UNICODE_SEPARATOR_PLAN = 'docs/plans/2026-06-15-unicode-line-separator-name-sanitization.md';
 const TRANSITIVE_ADVISORY_PLAN = 'docs/plans/2026-06-15-transitive-advisory-remediation.md';
 const NODE_REQUIRE_ESM_PLAN = 'docs/plans/2026-06-17-node-require-esm-floor.md';
+const GRAPHEME_LIMIT_PLAN = 'docs/plans/2026-06-17-grapheme-safe-name-limit.md';
 const REQUIRED = [
   '.github/workflows/check.yml',
   '.gitignore',
@@ -61,6 +62,7 @@ const REQUIRED = [
   UNICODE_SEPARATOR_PLAN,
   TRANSITIVE_ADVISORY_PLAN,
   NODE_REQUIRE_ESM_PLAN,
+  GRAPHEME_LIMIT_PLAN,
   'scripts/check-audit.js',
   'scripts/check-baseline.js',
   'src/commands/cli-101-training/examples.js',
@@ -273,9 +275,10 @@ function main() {
   for (const phrase of [
     'function formatLearnerName',
     'LEARNER_NAME_MAX_LENGTH = 80',
+    "LEARNER_NAME_SEGMENTER = new Intl.Segmenter(undefined, { granularity: 'grapheme' })",
     'UNSAFE_TERMINAL_NAME_RE = /[\\p{Cc}\\p{Cf}\\p{Zl}\\p{Zp}]/gu',
     "replace(UNSAFE_TERMINAL_NAME_RE, '')",
-    "Array.from(name || 'there')",
+    "Array.from(LEARNER_NAME_SEGMENTER.segment(name || 'there'), ({ segment }) => segment)",
     '.slice(0, LEARNER_NAME_MAX_LENGTH)',
     ".join('')",
     'module.exports.formatLearnerName'
@@ -286,7 +289,7 @@ function main() {
   }
 
   const welcomeTests = read('test_welcome_name_format.js');
-  for (const phrase of ["'A\\u009BB'", "'zero\\u200Dwidth'", "'zerowidth'", "'line\\u2028separator'", "'paragraph\\u2029separator'", "name: 'Line\\u2028and\\u2029paragraph'", "output.includes('Hello Alice! Thanks for taking 101 training today.')", "separatorOutput.includes('Hello Lineandparagraph! Thanks for taking 101 training today.')", 'codePointBoundaryName', "'x'.repeat(79)", "'😀'.repeat(100)", "Array.from(formatLearnerName('😀'.repeat(100))).length", 'function loadWelcomeCommand(overrides = {})', "prompt: async () => ({ name: ' A\\u0000lice ' })"]) {
+  for (const phrase of ["'A\\u009BB'", "'zero\\u200Dwidth'", "'zerowidth'", "'line\\u2028separator'", "'paragraph\\u2029separator'", "name: 'Line\\u2028and\\u2029paragraph'", "output.includes('Hello Alice! Thanks for taking 101 training today.')", "separatorOutput.includes('Hello Lineandparagraph! Thanks for taking 101 training today.')", 'codePointBoundaryName', "'x'.repeat(79)", "'😀'.repeat(100)", "Array.from(formatLearnerName('😀'.repeat(100))).length", "assert.strictEqual(formatLearnerName(flagBoundaryName), `${'x'.repeat(79)}🇺🇸`);", "assert.strictEqual(formatLearnerName(combiningBoundaryName), `${'x'.repeat(79)}e\\u0301`);", 'function loadWelcomeCommand(overrides = {})', "prompt: async () => ({ name: ' A\\u0000lice ' })"]) {
     if (!welcomeTests.includes(phrase)) {
       failures.push(`welcome name tests must include ${phrase}`);
     }
@@ -385,6 +388,7 @@ function main() {
     'Unicode control and format characters',
     'Unicode line and paragraph separators',
     'Unicode code points',
+    'grapheme clusters',
     'lone surrogate',
     'node test_welcome_name_format.js',
     'node test_examples_catalog.js',
@@ -410,13 +414,13 @@ function main() {
       failures.push(`docs must mention ${phrase}`);
     }
   }
-  const codePointClaims = {
-    'README.md': '80 Unicode code points without splitting non-BMP',
-    'SECURITY.md': 'display limit by Unicode code points',
-    'VISION.md': 'truncation code-point-safe at the 80-character boundary',
-    'CHANGES.md': 'truncate by Unicode code points'
+  const graphemeClaims = {
+    'README.md': '80 grapheme clusters without splitting',
+    'SECURITY.md': 'display limit by grapheme clusters',
+    'VISION.md': 'truncation grapheme-safe at the 80-character boundary',
+    'CHANGES.md': 'truncate by grapheme clusters'
   };
-  for (const [file, phrase] of Object.entries(codePointClaims)) {
+  for (const [file, phrase] of Object.entries(graphemeClaims)) {
     if (!read(file).includes(phrase)) {
       failures.push(`${file} must include ${phrase}`);
     }
@@ -596,6 +600,21 @@ function main() {
   for (const phrase of ['status: completed', 'Node 22.11.0', 'Node 22.13.0', 'ERR_REQUIRE_ESM', 'npm test', 'npm pack --dry-run', '27664317402', '27664325793']) {
     if (!nodeRequireEsmPlan.includes(phrase)) {
       failures.push(`Node require(esm) floor plan must mention ${phrase}`);
+    }
+  }
+  const graphemeLimitPlan = read(GRAPHEME_LIMIT_PLAN);
+  const graphemeLimitStatus = [...graphemeLimitPlan.matchAll(/^status:\s*(.+?)\s*$/gmi)].map(match => match[1]);
+  const graphemeLimitWork = markdownSection(graphemeLimitPlan, 'Work Completed');
+  const graphemeLimitVerification = markdownSection(graphemeLimitPlan, 'Verification Completed');
+  if (graphemeLimitStatus.length !== 1 || graphemeLimitStatus[0] !== 'completed' || !graphemeLimitWork) {
+    failures.push('grapheme-safe name limit plan must record one completed status and completed work');
+  }
+  if (!graphemeLimitVerification || /\b(?:pending|todo|tbd|not run)\b/i.test(graphemeLimitVerification)) {
+    failures.push('grapheme-safe name limit plan must record finished verification');
+  }
+  for (const evidence of ['node test_welcome_name_format.js', 'npm test', 'make check', 'external working directory', 'npm audit', 'npm pack --dry-run', 'Six isolated hostile mutations were rejected', 'git diff --check']) {
+    if (!graphemeLimitVerification.includes(evidence)) {
+      failures.push(`grapheme-safe name limit verification must mention ${evidence}`);
     }
   }
   if (!transitiveAdvisoryVerification || /\b(?:pending|todo|tbd|not run)\b/i.test(transitiveAdvisoryVerification)) {

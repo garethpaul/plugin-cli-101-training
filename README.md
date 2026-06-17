@@ -85,8 +85,8 @@ js-yaml 4 removes the `safeDump` API still used by that host line.
 - Unknown example keys fail before any command text is printed or copied.
 - The welcome command trims learner names, strips all Unicode control and
   format characters (including bidirectional formatting controls) plus Unicode
-  line and paragraph separators, and caps displayed names at 80 Unicode code points without splitting non-BMP
-  characters into lone surrogates.
+  line and paragraph separators, and caps displayed names at 80 grapheme clusters without splitting flags,
+  combining sequences, or non-BMP characters.
 - Keep `bin/run` as the executable launcher for Unix installs; `bin/run.cmd`
   remains the non-executable Windows wrapper.
 - Packaged launcher files stay included through the package `files` list.

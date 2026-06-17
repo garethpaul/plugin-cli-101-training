@@ -56,6 +56,10 @@ async function main() {
   const codePointBoundaryName = `${'x'.repeat(79)}😀trailing`;
   assert.strictEqual(formatLearnerName(codePointBoundaryName), `${'x'.repeat(79)}😀`);
   assert.strictEqual(Array.from(formatLearnerName('😀'.repeat(100))).length, 80);
+  const flagBoundaryName = `${'x'.repeat(79)}🇺🇸trailing`;
+  assert.strictEqual(formatLearnerName(flagBoundaryName), `${'x'.repeat(79)}🇺🇸`);
+  const combiningBoundaryName = `${'x'.repeat(79)}e\u0301trailing`;
+  assert.strictEqual(formatLearnerName(combiningBoundaryName), `${'x'.repeat(79)}e\u0301`);
 
   const Welcome = loadWelcomeCommand({
     inquirer: { prompt: async () => ({ name: ' A\u0000lice ' }) }
