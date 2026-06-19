@@ -274,12 +274,19 @@ function main() {
   const welcome = read('src/commands/cli-101-training/welcome.js');
   for (const phrase of [
     'function formatLearnerName',
-    'LEARNER_NAME_MAX_LENGTH = 80',
+    'LEARNER_NAME_MAX_GRAPHEMES = 80',
+    'LEARNER_NAME_MAX_CODE_POINTS = 160',
+    'LEARNER_NAME_MAX_UTF8_BYTES = 1024',
     "LEARNER_NAME_SEGMENTER = new Intl.Segmenter(undefined, { granularity: 'grapheme' })",
     'UNSAFE_TERMINAL_NAME_RE = /[\\p{Cc}\\p{Cf}\\p{Zl}\\p{Zp}]/gu',
+    'function truncateByCodePointAndByte',
+    "Buffer.byteLength(codePoint, 'utf8')",
+    'function formatLearnerNameForPrompt',
     "replace(UNSAFE_TERMINAL_NAME_RE, '')",
-    "Array.from(LEARNER_NAME_SEGMENTER.segment(name || 'there'), ({ segment }) => segment)",
-    '.slice(0, LEARNER_NAME_MAX_LENGTH)',
+    'LEARNER_NAME_SEGMENTER.segment(bounded)',
+    '.slice(0, LEARNER_NAME_MAX_GRAPHEMES)',
+    'filter: formatLearnerName',
+    'transformer: formatLearnerNameForPrompt',
     ".join('')",
     'module.exports.formatLearnerName'
   ]) {
@@ -289,7 +296,7 @@ function main() {
   }
 
   const welcomeTests = read('test_welcome_name_format.js');
-  for (const phrase of ["'A\\u009BB'", "'zero\\u200Dwidth'", "'zerowidth'", "'line\\u2028separator'", "'paragraph\\u2029separator'", "name: 'Line\\u2028and\\u2029paragraph'", "output.includes('Hello Alice! Thanks for taking 101 training today.')", "separatorOutput.includes('Hello Lineandparagraph! Thanks for taking 101 training today.')", 'codePointBoundaryName', "'x'.repeat(79)", "'😀'.repeat(100)", "Array.from(formatLearnerName('😀'.repeat(100))).length", "assert.strictEqual(formatLearnerName(flagBoundaryName), `${'x'.repeat(79)}🇺🇸`);", "assert.strictEqual(formatLearnerName(combiningBoundaryName), `${'x'.repeat(79)}e\\u0301`);", 'function loadWelcomeCommand(overrides = {})', "prompt: async () => ({ name: ' A\\u0000lice ' })"]) {
+  for (const phrase of ["'A\\u009BB'", "'zero\\u200Dwidth'", "'zerowidth'", "'line\\u2028separator'", "'paragraph\\u2029separator'", "name: 'Line\\u2028and\\u2029paragraph'", "output.includes('Hello Alice! Thanks for taking 101 training today.')", "separatorOutput.includes('Hello Lineandparagraph! Thanks for taking 101 training today.')", 'codePointBoundaryName', "'x'.repeat(79)", "'😀'.repeat(100)", "Array.from(formatLearnerName('😀'.repeat(100))).length", "assert.strictEqual(formatLearnerName(flagBoundaryName), `${'x'.repeat(79)}🇺🇸`);", "assert.strictEqual(formatLearnerName(combiningBoundaryName), `${'x'.repeat(79)}e\\u0301`);", 'function loadWelcomeCommand(overrides = {})', "prompt: async () => ({ name: ' A\\u0000lice ' })", 'oversizedSingleGrapheme', "Buffer.byteLength(boundedSingleGrapheme, 'utf8') <= 1024", 'Array.from(boundedSingleGrapheme).length <= 160', 'unsafePromptInput', 'question.transformer', 'question.filter', '!unsafePromptOutput.join(\'\\n\').includes(unsafePromptInput)', '!/[\\p{Cc}\\p{Cf}\\p{Zl}\\p{Zp}]/u.test(line)']) {
     if (!welcomeTests.includes(phrase)) {
       failures.push(`welcome name tests must include ${phrase}`);
     }
