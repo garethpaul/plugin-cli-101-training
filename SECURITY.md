@@ -53,9 +53,12 @@ prompt options do not drift at runtime.
 Unknown example keys should fail before command text is printed or copied.
 
 Learner names entered at prompts should be treated as display-only input and
-sanitized before terminal output. Strip terminal control characters and
-bidirectional formatting controls so prompt input cannot visually reorder
-console text.
+sanitized before terminal output. Strip Unicode control and format characters,
+including bidirectional formatting controls, so prompt input cannot visually
+reorder console text or issue terminal control sequences. Strip Unicode line
+and paragraph separators so display-only names cannot add terminal lines.
+Apply the learner-name display limit by grapheme clusters so truncation cannot
+split flags, combining sequences, or non-BMP characters at the terminal boundary.
 
 Keep `bin/run` as the executable launcher and avoid permission churn in
 packaging files, because broken launcher metadata can change how learners run
@@ -65,9 +68,24 @@ match the reviewed local launcher behavior.
 
 ## Dependency and Supply Chain Security
 
-Pinned, read-only hosted Linux validation runs only the dependency-free static
-and focused behavior tests. It does not resolve the unlocked legacy dependency
-graph or use Twilio credentials.
+Pinned, read-only hosted Linux and Windows validation uses the committed
+lockfile with lifecycle scripts disabled, audits the full dependency graph, runs
+the focused behavior tests, and validates package contents on the exact Node
+22.13 compatibility floor and Node 24. It does not retain checkout credentials
+or use Twilio credentials.
+
+`@oclif/core` 1.26.2 preserves the host contract required by Twilio CLI Core
+8.3.4 while replacing the archived `@oclif/command` and `@oclif/config`
+packages. The maintained oclif utility CLI replaces `@oclif/dev-cli`; unused
+legacy test, lint, coverage, and glob packages are removed. The reviewed full
+production dependencies and development dependency graph have zero high or
+critical findings. Reviewed root overrides resolve `form-data 4.0.6` and retain
+the direct Twilio and oclif host versions.
+A js-yaml upstream blocker
+remains because the compatible oclif core line uses `js-yaml 3.14.2` and calls
+the removed `safeDump` API. The low-severity audit is enforced by a fail-closed
+JSON policy that permits only the exact five reviewed moderate records and
+rejects any new package, count, severity, advisory, or high/critical finding.
 
 Dependency updates should come from trusted package managers and should keep lockfiles in sync when lockfiles exist. Do not commit credentials, private keys, tokens, generated secrets, or machine-local configuration. If a vulnerability depends on a compromised package, typosquatting risk, insecure transitive dependency, or unsafe build step, include the package name, affected version, and the path through which it is used.
 

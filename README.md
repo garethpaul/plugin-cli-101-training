@@ -1,5 +1,12 @@
 # plugin-cli-101-training
 
+Repository maintenance and static verification require Node 22.13 or newer;
+`.nvmrc` selects Node 24. Node 22.13 is the first Node 22 release that loads the
+ESM-only Octokit dependency used by the Twilio/oclif host without an opt-in flag
+or an experimental warning. The plugin uses `@oclif/core` 1.26.2 because Twilio
+CLI Core 8.3.4 supports the oclif core 1.x host contract; the maintained oclif
+utility CLI handles package metadata generation.
+
 <!-- README-OVERVIEW-IMAGE -->
 ![Project overview](docs/readme-overview.svg)
 
@@ -34,24 +41,33 @@ Additional scan context:
 - Source directories: bin, src
 - Dependency and build manifests: package.json
 - Entry points or build surfaces: package.json, Makefile
-- Test-looking files: no obvious test files detected
+- Behavior tests: `test_examples_catalog.js`, `test_welcome_name_format.js`,
+  and the installed launcher smoke suite `test_oclif_commands.js`
+- The VM harnesses execute the interactive welcome and example prompt paths,
+  including sanitized prompted names and clipboard opt-in behavior.
 
 ## Getting Started
 
 ### Prerequisites
 
 - Git
-- Node.js and npm
+- Node.js 22 or newer and npm; Node 24 is the repository default
 
 ### Setup
 
 ```bash
 git clone https://github.com/garethpaul/plugin-cli-101-training.git
 cd plugin-cli-101-training
-npm install
+npm ci --ignore-scripts
 ```
 
-The setup commands above are derived from repository files. Legacy mobile, Python, or JavaScript samples may require older SDKs or package versions than a modern workstation uses by default.
+Use `npm ci --ignore-scripts` with the reviewed lockfile for reproducible
+contributor and CI installs.
+The dependency-free focused tests can run before installation, while full
+launcher and package validation use the committed lockfile. The reviewed full
+dependency graph has zero known audit findings. Root overrides keep the current
+Twilio/oclif host contract while resolving `form-data 4.0.6`. A js-yaml upstream blocker remains: the host requires oclif core 1.x and `js-yaml 3.14.2`, while
+js-yaml 4 removes the `safeDump` API still used by that host line.
 
 ## Running or Using the Project
 
@@ -67,9 +83,10 @@ The setup commands above are derived from repository files. Legacy mobile, Pytho
   runtime.
 - Frozen example choices keep prompt options aligned with the reviewed catalog.
 - Unknown example keys fail before any command text is printed or copied.
-- The welcome command trims learner names, strips terminal control characters,
-  strips bidirectional formatting controls, and caps displayed names before
-  echoing them.
+- The welcome command trims learner names, strips all Unicode control and
+  format characters (including bidirectional formatting controls) plus Unicode
+  line and paragraph separators, and caps displayed names at 80 grapheme clusters without splitting flags,
+  combining sequences, or non-BMP characters.
 - Keep `bin/run` as the executable launcher for Unix installs; `bin/run.cmd`
   remains the non-executable Windows wrapper.
 - Packaged launcher files stay included through the package `files` list.
@@ -77,17 +94,19 @@ The setup commands above are derived from repository files. Legacy mobile, Pytho
 Detected npm scripts:
 
 - `npm run build` - `npm run check`
-- `npm run postpack` - `rm -f oclif.manifest.json`
-- `npm run prepack` - `oclif-dev manifest && oclif-dev readme`
+- `npm run postpack` - portable Node cleanup for `oclif.manifest.json`
+- `npm run prepack` - `oclif manifest && oclif readme`
 - `npm run check` - `node scripts/check-baseline.js`
 - `npm run lint` - `npm run check`
-- `npm run test` - `npm run check`
-- `npm run version` - `oclif-dev readme && git add README.md`
+- `npm run test` - static, focused behavior, and installed command smoke tests
+- `npm run version` - `oclif readme && git add README.md`
 
 ## Testing and Verification
 
-Pinned hosted Linux validation runs the dependency-free `npm test` baseline on
-Node 18 and Node 22 without installing the legacy oclif/Twilio dependency tree.
+Pinned hosted Linux and Windows validation performs a locked, script-disabled
+install, audits the full dependency graph, runs `npm test`, and validates package
+contents on the exact Node 22.13 compatibility floor and Node 24 without retaining
+checkout credentials.
 
 - `make check`
 - `make lint`
@@ -99,6 +118,11 @@ Node 18 and Node 22 without installing the legacy oclif/Twilio dependency tree.
 - `node scripts/check-baseline.js`
 - `node test_welcome_name_format.js`
 - `node test_examples_catalog.js`
+- `node test_oclif_commands.js`
+
+The Make targets resolve the repository root from the loaded Makefile, so the
+same full gate can be invoked through an absolute Makefile path from another
+working directory.
 
 When the required SDK or runtime is unavailable, use static checks and source review first, then verify on a machine that has the matching platform toolchain.
 
@@ -113,8 +137,10 @@ When the required SDK or runtime is unavailable, use static checks and source re
 
 - Review changes touching authentication or token handling; examples from the scan include src/commands/cli-101-training/welcome.js.
 - Review changes touching external API calls or credential-adjacent configuration; examples from the scan include bin/run, package.json, src/commands/cli-101-training/examples.js, src/commands/cli-101-training/feedback.js, and 1 more.
-- Review changes touching network requests, sockets, or service endpoints; examples from the scan include appveyor.yml, package.json, src/commands/cli-101-training/examples.js, src/commands/cli-101-training/feedback.js.
-- Review changes touching file, media, JSON, XML, CSV, OCR, or data parsing; examples from the scan include appveyor.yml, package.json, src/commands/cli-101-training/examples.js.
+- Review changes touching network requests, sockets, or service endpoints;
+  relevant files include `package.json` and the Twilio training commands.
+- Review changes touching file or data parsing; relevant files include
+  `.github/workflows/check.yml`, `package.json`, and the training commands.
 - Training commands can affect live accounts when copied with real credentials.
   Keep side effects visible, use fake placeholder values, and prefer read-only
   examples for phone-number workflows.
@@ -126,6 +152,8 @@ When the required SDK or runtime is unavailable, use static checks and source re
 - Frozen example choices should stay derived from the reviewed catalog.
 - Learner names entered at the welcome prompt should stay display-only and
   sanitized before terminal output, including bidirectional formatting controls
+- Prompted example choices must resolve through the frozen catalog and must not
+  write to the clipboard unless `--copy` is present.
   that could visually reorder console text.
 
 ## Maintenance Notes
@@ -136,6 +164,8 @@ When the required SDK or runtime is unavailable, use static checks and source re
 - Keep the executable launcher mode on `bin/run` intact when editing packaging
   files.
 - Keep packaged launcher files included when editing `package.json`.
+- Keep `npm pack --dry-run` and the `@oclif/core` command smoke tests passing on
+  the exact Node 22.13 compatibility floor and Node 24.
 - See `CHANGES.md` and
   `docs/plans/` for the current safe-training baseline.
 - See `SECURITY.md` for vulnerability reporting and safe research guidance.

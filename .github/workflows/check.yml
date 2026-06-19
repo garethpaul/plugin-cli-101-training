@@ -10,15 +10,33 @@ concurrency:
   cancel-in-progress: true
 jobs:
   test:
-    runs-on: ubuntu-24.04
+    name: test (${{ matrix.os }}, ${{ matrix.node.label }})
+    runs-on: ${{ matrix.os }}
     timeout-minutes: 10
     strategy:
       fail-fast: false
       matrix:
-        node-version: [18, 22]
+        os: [ubuntu-24.04, windows-2025]
+        node:
+          - version: '22.13.0'
+            label: '22'
+          - version: '24'
+            label: '24'
     steps:
-      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10
-      - uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e
+      - name: Check out repository
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10
         with:
-          node-version: ${{ matrix.node-version }}
-      - run: npm test
+          persist-credentials: false
+      - name: Set up Node
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e
+        with:
+          node-version: ${{ matrix.node.version }}
+          cache: npm
+      - name: Install locked dependencies
+        run: npm ci --ignore-scripts
+      - name: Audit full dependency graph
+        run: node scripts/check-audit.js
+      - name: Run checks
+        run: npm test
+      - name: Validate package contents
+        run: npm pack --dry-run

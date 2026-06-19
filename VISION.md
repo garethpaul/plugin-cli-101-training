@@ -19,8 +19,9 @@ The current focus is:
 
 Priority:
 
-- Keep the dependency-free baseline running on pinned hosted Linux with Node 18
-  and Node 22
+- Keep the dependency-free baseline running on pinned hosted Linux and Windows
+  with the exact Node 22.13 compatibility floor and maintained Node 24
+- Keep the locked full dependency graph free of known audit findings
 
 - Preserve the `cli-101-training` command namespace
 - Keep workshop examples easy to read and copy
@@ -30,24 +31,33 @@ Priority:
 - Keep clipboard failure details out of learner-facing terminal output
 - Keep learner names sanitized before terminal output
 - Strip bidirectional formatting controls from learner names before display
+- Strip all Unicode control and format characters from learner names before
+  display
+- Strip Unicode line and paragraph separators from learner names before
+  terminal display
+- Keep learner-name truncation grapheme-safe at the 80-character boundary
 - Keep the frozen example catalog limited to reviewed fake placeholders
+- Keep the `form-data 4.0.6` transitive advisory override until Twilio CLI Core
+  absorbs the patched range
+- Track the js-yaml upstream blocker without overriding the oclif core 1.x
+  `safeDump` compatibility boundary or weakening the low-severity audit
 - Keep frozen example choices derived from the reviewed catalog
 - Keep unknown example keys from resolving to command output
+- Keep interactive welcome and example prompt paths covered without live Twilio
+  access or implicit clipboard writes
 - Keep `bin/run` as the executable launcher for Unix installs
 - Keep packaged launcher files included for npm publishes
 - Keep `make lint`, `make build`, `npm run lint`, and `npm run build` available
   as stable static gate aliases
 - Maintain oclif packaging metadata for Twilio CLI plugin installation
+- Preserve the `@oclif/core` 1.x compatibility boundary required by Twilio CLI
+  Core 8.3.4 until the host itself adopts a newer core contract
 
 Next priorities:
 
-- Add tests for command prompts and flag combinations
-- Add direct tests for learner-name formatting once a test harness is restored
-- Add more direct tests for example catalog lookup and prompt behavior
-- Document supported Node and Twilio CLI versions
 - Remove unused imports and stale generated README sections
-- Revisit lint and audit scripts once a lockfile and dependency baseline are
-  committed
+- Reassess the oclif core compatibility boundary when Twilio CLI Core changes
+  its supported host major
 
 Contribution rules:
 
