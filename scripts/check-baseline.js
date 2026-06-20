@@ -687,6 +687,8 @@ function main() {
     }
   }
   for (const phrase of [
+    'ifneq ($(origin MAKEFILE_LIST),file)',
+    '$(error MAKEFILE_LIST must not be overridden)',
     'override ROOT := $(abspath $(dir $(lastword $(MAKEFILE_LIST))))',
     'cd "$(ROOT)" && $(NPM) run lint',
     'cd "$(ROOT)" && $(NPM) test',
