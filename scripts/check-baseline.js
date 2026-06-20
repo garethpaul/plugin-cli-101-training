@@ -68,6 +68,7 @@ const REQUIRED = [
   'src/commands/cli-101-training/examples.js',
   'src/commands/cli-101-training/feedback.js',
   'src/commands/cli-101-training/welcome.js',
+  'src/js-yaml-compat.js',
   'test_examples_catalog.js',
   'test_audit_policy.js',
   'test_oclif_commands.js',
@@ -117,8 +118,8 @@ function main() {
   if (JSON.stringify(pkg.devDependencies) !== JSON.stringify({ oclif: '^4.23.14' })) {
     failures.push('package.json must keep only the maintained oclif utility CLI as a direct development dependency');
   }
-  if (JSON.stringify(pkg.overrides) !== JSON.stringify({ 'form-data': '4.0.6' })) {
-    failures.push('package.json must pin the reviewed form-data advisory override');
+  if (JSON.stringify(pkg.overrides) !== JSON.stringify({ 'form-data': '4.0.6', 'js-yaml': '4.2.0' })) {
+    failures.push('package.json must pin the reviewed form-data and js-yaml advisory overrides');
   }
   for (const dependency of ['@oclif/command', '@oclif/config', '@oclif/dev-cli', '@oclif/test', '@twilio/cli-test', 'chai', 'eslint', 'eslint-config-oclif', 'globby', 'mocha', 'nyc']) {
     if (pkg.dependencies?.[dependency] || pkg.devDependencies?.[dependency]) {
@@ -131,10 +132,11 @@ function main() {
   }
   if (
     lock.packages?.['node_modules/form-data']?.version !== '4.0.6' ||
-    lock.packages?.['node_modules/@oclif/core/node_modules/js-yaml']?.version !== '3.14.2' ||
-    lock.packages?.['node_modules/@twilio/cli-core/node_modules/js-yaml']?.version !== '3.14.2'
+    lock.packages?.['node_modules/js-yaml']?.version !== '4.2.0' ||
+    lock.packages?.['node_modules/@oclif/core/node_modules/js-yaml'] ||
+    lock.packages?.['node_modules/@twilio/cli-core/node_modules/js-yaml']
   ) {
-    failures.push('package-lock.json must patch form-data while preserving compatible oclif js-yaml releases');
+    failures.push('package-lock.json must resolve form-data 4.0.6 and one patched js-yaml 4.2.0 copy');
   }
   if (pkg.scripts.check !== 'node scripts/check-baseline.js') {
     failures.push('package.json must expose npm run check');
@@ -176,6 +178,7 @@ function main() {
     'src/commands/cli-101-training/examples.js',
     'src/commands/cli-101-training/feedback.js',
     'src/commands/cli-101-training/welcome.js',
+    'src/js-yaml-compat.js',
     'test_audit_policy.js',
     'test_examples_catalog.js',
     'test_oclif_commands.js',
@@ -255,9 +258,15 @@ function main() {
   }
 
   const launcher = read('bin/run');
-  for (const phrase of ["require('@oclif/core')", 'const { Errors, flush, run }', 'run()', '.then(flush)', '.catch(Errors.handle)']) {
+  for (const phrase of ["require('../src/js-yaml-compat')", "require('@oclif/core')", 'const { Errors, flush, run }', 'run()', '.then(flush)', '.catch(Errors.handle)']) {
     if (!launcher.includes(phrase)) {
       failures.push(`bin/run must include ${phrase}`);
+    }
+  }
+  const yamlCompat = read('src/js-yaml-compat.js');
+  for (const phrase of ["require('js-yaml')", 'yaml.safeLoad = yaml.load', 'yaml.safeDump = yaml.dump']) {
+    if (!yamlCompat.includes(phrase)) {
+      failures.push(`js-yaml compatibility preload must include ${phrase}`);
     }
   }
   if (launcher.includes("require('@oclif/command')") || launcher.includes("require('@oclif/errors/handle')")) {
@@ -363,13 +372,9 @@ function main() {
   for (const phrase of [
     "['audit', '--audit-level=low', '--json']",
     "shell: platform === 'win32'",
-    "moderate: 5, high: 0, critical: 0, total: 5",
-    "'@oclif/core'",
-    "'@oclif/plugin-help'",
-    "'@oclif/plugin-plugins'",
-    "'@twilio/cli-core'",
-    "'js-yaml'",
-    'GHSA-h67p-54hq-rp68'
+    'moderate: 0, high: 0, critical: 0, total: 0',
+    'expected no vulnerable packages',
+    'Dependency audit reported zero known vulnerabilities.'
   ]) {
     if (!auditPolicy.includes(phrase)) failures.push(`dependency audit policy must keep ${phrase}`);
   }
@@ -415,7 +420,7 @@ function main() {
     'Twilio CLI Core 8.3.4',
     'reviewed lockfile',
     'form-data 4.0.6',
-    'js-yaml upstream blocker',
+    'js-yaml 4.2.0',
     'production dependencies',
     'executable launcher',
     'packaged launcher files',
@@ -604,8 +609,8 @@ function main() {
   const transitiveAdvisoryStatus = [...transitiveAdvisoryPlan.matchAll(/^status:\s*(.+?)\s*$/gmi)].map(match => match[1]);
   const transitiveAdvisoryWork = markdownSection(transitiveAdvisoryPlan, 'Work Completed');
   const transitiveAdvisoryVerification = markdownSection(transitiveAdvisoryPlan, 'Verification Completed');
-  if (transitiveAdvisoryStatus.length !== 1 || transitiveAdvisoryStatus[0] !== 'blocked_upstream' || !transitiveAdvisoryWork) {
-    failures.push('transitive advisory plan must record one upstream-blocked status and completed work');
+  if (transitiveAdvisoryStatus.length !== 1 || transitiveAdvisoryStatus[0] !== 'completed' || !transitiveAdvisoryWork) {
+    failures.push('transitive advisory plan must record one completed status and completed work');
   }
 
   const nodeRequireEsmPlan = read(NODE_REQUIRE_ESM_PLAN);
@@ -634,12 +639,11 @@ function main() {
   }
   for (const evidence of [
     'form-data 4.0.6',
-    'js-yaml 3.14.2',
-    'safeDump',
+    'js-yaml 4.2.0',
     'npm ci --ignore-scripts',
     'npm audit --audit-level=low',
     'node scripts/check-audit.js',
-    'five moderate',
+    'zero known vulnerabilities',
     'npm test',
     'make check',
     'external working directory',

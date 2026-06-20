@@ -66,8 +66,11 @@ contributor and CI installs.
 The dependency-free focused tests can run before installation, while full
 launcher and package validation use the committed lockfile. The reviewed full
 dependency graph has zero known audit findings. Root overrides keep the current
-Twilio/oclif host contract while resolving `form-data 4.0.6`. A js-yaml upstream blocker remains: the host requires oclif core 1.x and `js-yaml 3.14.2`, while
-js-yaml 4 removes the `safeDump` API still used by that host line.
+Twilio/oclif host contract while resolving `form-data 4.0.6` and
+`js-yaml 4.2.0`. Installed launcher and command smoke tests guard the legacy
+host boundary after the transitive parser update. The packaged launcher
+preloads compatibility aliases for the legacy oclif `safeLoad` and `safeDump`
+calls before loading oclif core.
 
 ## Running or Using the Project
 

@@ -1,6 +1,6 @@
 # Transitive Advisory Remediation
 
-status: blocked_upstream
+status: completed
 
 ## Context
 
@@ -69,6 +69,11 @@ upgrade.
 - Added a cross-platform audit-policy gate that accepts only the exact five
   moderate records tied to GHSA-h67p-54hq-rp68 and rejects any changed package,
   count, severity, advisory, malformed output, or high/critical finding.
+- On 2026-06-20, pinned `js-yaml 4.2.0` through the root override, collapsed the
+  vulnerable nested copies to one patched copy, and replaced the temporary
+  advisory allowance with a zero-finding audit contract.
+- Added a packaged launcher preload that maps the legacy oclif `safeLoad` and
+  `safeDump` aliases to js-yaml 4's safe-by-default `load` and `dump` APIs.
 
 ## Verification Completed
 
@@ -104,14 +109,25 @@ upgrade.
   also passed on Node 22. Isolated runtime and static mutations that replaced
   the Windows guard with unconditional direct spawning were both rejected.
 - `git diff --check` plus exact manifest and lock audits passed; secret and generated-artifact audits passed.
+- `npm ci --ignore-scripts` reproduced the patched lock with `form-data 4.0.6`
+  and `js-yaml 4.2.0`.
+- `npm audit --audit-level=low` and `node scripts/check-audit.js` reported zero known vulnerabilities.
+- `npm test`, `make check`, the external working directory gate, and
+  `npm pack --dry-run` passed with installed oclif command smoke coverage.
+- Direct compatibility tests exercised both `safeLoad` and `safeDump` through
+  the packaged preload before the launcher loaded oclif core.
+- Updated hostile mutations reject override removal, vulnerable lock
+  restoration, nonzero audit counts, vulnerable package entries, and malformed
+  reports; `git diff --check` plus secret and generated-artifact audits passed.
 
-## Upstream Blocker
+## Historical Upstream Blocker
 
 - `@twilio/cli-core@8.3.4` is the latest release and still depends on oclif core
   1.x packages.
 - The latest oclif core 1.x release depends on js-yaml 3.x and invokes
   `safeDump`; js-yaml 4.2.0 replaces that API with a throwing compatibility
   stub.
-- No js-yaml 3.x patched release exists. The full low-severity audit remains
-  enabled through a strict JSON policy gate until the Twilio/oclif host line
-  migrates or publishes a compatible fix.
+- No js-yaml 3.x patched release exists. The repository now resolves the
+  transitive parser to `js-yaml 4.2.0`; installed launcher, command, package,
+  and audit gates verify the supported training-plugin paths against that
+  patched graph.
