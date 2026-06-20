@@ -1,5 +1,14 @@
 # Changes
 
+## 2026-06-20
+
+- Overrode both legacy oclif parser paths with patched `js-yaml 4.2.0` while
+  preserving the direct Twilio CLI Core and oclif compatibility versions.
+- Replaced the temporary reviewed-advisory allowance with a fail-closed audit
+  contract requiring zero known vulnerabilities.
+- Added a launcher preload and regression coverage for the legacy oclif
+  `safeLoad` and `safeDump` aliases removed by js-yaml 4.
+
 ## 2026-06-17
 
 - Made the 80-character learner-name limit truncate by grapheme clusters so
