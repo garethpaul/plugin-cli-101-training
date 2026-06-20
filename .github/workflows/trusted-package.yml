@@ -1,0 +1,136 @@
+name: Trusted package verifier
+
+on:
+  pull_request_target:
+    branches: [main]
+    types: [opened, synchronize, reopened, ready_for_review]
+
+permissions: {}
+
+concurrency:
+  group: trusted-package-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    name: base-controlled verifier
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    environment:
+      name: trusted-package-verifier
+    env:
+      BASH_ENV: /dev/null
+      ENV: /dev/null
+      NODE_OPTIONS: ""
+      NODE_PATH: ""
+      NPM_CONFIG_IGNORE_SCRIPTS: "true"
+      NPM_CONFIG_USERCONFIG: /dev/null
+      BASE_SHA: ${{ github.event.pull_request.base.sha }}
+      HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+      PR_NUMBER: ${{ github.event.pull_request.number }}
+      GH_REPO: ${{ github.repository }}
+    steps:
+      - name: Create dedicated Check App token
+        id: app-token
+        uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1
+        with:
+          app-id: ${{ secrets.TRUSTED_CHECK_APP_ID }}
+          private-key: ${{ secrets.TRUSTED_CHECK_APP_PRIVATE_KEY }}
+          owner: ${{ github.repository_owner }}
+          repositories: ${{ github.event.repository.name }}
+          permission-checks: write
+
+      - name: Fetch base and candidate as Git objects, then verify
+        id: verify
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -euo pipefail
+          [[ "$BASE_SHA" =~ ^[0-9a-f]{40}$ ]]
+          [[ "$HEAD_SHA" =~ ^[0-9a-f]{40}$ ]]
+          [[ "$PR_NUMBER" =~ ^[0-9]+$ ]]
+          [[ "$GH_REPO" =~ ^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$ ]]
+          [[ "$GITHUB_BASE_REF" == "main" ]]
+
+          git_dir="$RUNNER_TEMP/candidate.git"
+          rm -rf "$git_dir"
+          git init --bare "$git_dir"
+          git --git-dir "$git_dir" remote add origin "https://github.com/$GH_REPO.git"
+          git --git-dir "$git_dir" \
+            -c protocol.version=2 \
+            -c core.hooksPath=/dev/null \
+            -c protocol.file.allow=never \
+            fetch --no-tags --depth=2 origin \
+            "refs/heads/main:refs/trusted/base" \
+            "refs/pull/$PR_NUMBER/head:refs/trusted/head"
+
+          [[ "$(git --git-dir "$git_dir" rev-parse refs/trusted/base)" == "$BASE_SHA" ]]
+          [[ "$(git --git-dir "$git_dir" rev-parse refs/trusted/head)" == "$HEAD_SHA" ]]
+
+          trusted_base="$RUNNER_TEMP/trusted-base"
+          mkdir -p "$trusted_base/.github/trusted/tests"
+          for trusted_path in \
+            .github/trusted/policy.json \
+            .github/trusted/report_check.py \
+            .github/trusted/semantic-v1.patch.gz \
+            .github/trusted/tests/test_trusted_verifier.py \
+            .github/trusted/verify_candidate.py
+          do
+            git --git-dir "$git_dir" show "refs/trusted/base:$trusted_path" \
+              > "$trusted_base/$trusted_path"
+          done
+
+          env -i \
+            HOME="$RUNNER_TEMP/test-home" \
+            LANG=C.UTF-8 \
+            LC_ALL=C.UTF-8 \
+            PATH="/usr/bin:/bin" \
+            GIT_CONFIG_NOSYSTEM=1 \
+            GIT_CONFIG_GLOBAL=/dev/null \
+            npm_config_ignore_scripts=true \
+            npm_config_userconfig=/dev/null \
+            /usr/bin/python3 -I -S \
+              "$trusted_base/.github/trusted/tests/test_trusted_verifier.py"
+
+          trusted_home="$RUNNER_TEMP/trusted-home"
+          mkdir -p "$trusted_home"
+          env -i \
+            HOME="$trusted_home" \
+            LANG=C.UTF-8 \
+            LC_ALL=C.UTF-8 \
+            PATH="/usr/bin:/bin" \
+            GIT_CONFIG_NOSYSTEM=1 \
+            GIT_CONFIG_GLOBAL=/dev/null \
+            npm_config_ignore_scripts=true \
+            npm_config_userconfig=/dev/null \
+            /usr/bin/python3 -I -S \
+              "$trusted_base/.github/trusted/verify_candidate.py" \
+              --git-dir "$git_dir" \
+              --base "$BASE_SHA" \
+              --head "$HEAD_SHA" \
+              --output "$RUNNER_TEMP/candidate-package.tgz" \
+              --summary "$RUNNER_TEMP/verification-summary.json"
+
+      - name: Publish dedicated App check
+        if: always()
+        env:
+          APP_TOKEN: ${{ steps.app-token.outputs.token }}
+          CONCLUSION: ${{ steps.verify.outcome == 'success' && 'success' || 'failure' }}
+          SUMMARY_FILE: ${{ runner.temp }}/verification-summary.json
+        run: |
+          env -i \
+            HOME="$RUNNER_TEMP/report-home" \
+            LANG=C.UTF-8 \
+            LC_ALL=C.UTF-8 \
+            PATH="/usr/bin:/bin" \
+            GH_REPO="$GH_REPO" \
+            HEAD_SHA="$HEAD_SHA" \
+            APP_TOKEN="$APP_TOKEN" \
+            CONCLUSION="$CONCLUSION" \
+            SUMMARY_FILE="$SUMMARY_FILE" \
+            /usr/bin/python3 -I -S \
+              "$RUNNER_TEMP/trusted-base/.github/trusted/report_check.py"
+
+      - name: Enforce verifier result
+        if: steps.verify.outcome != 'success'
+        run: exit 1

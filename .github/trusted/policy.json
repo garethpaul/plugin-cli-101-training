@@ -1,0 +1,69 @@
+{
+  "version": 1,
+  "check_name": "trusted-package/bootstrap-v1",
+  "semantic_patch_file": "semantic-v1.patch.gz",
+  "semantic_patch_sha256": "b514da6c7e702844f3a862c465f457a4d6b20a13fb00f0dd457570886cb11e28",
+  "allowed_scripts": [
+    "build",
+    "check",
+    "lint",
+    "test"
+  ],
+  "forbidden_lifecycle_scripts": [
+    "preinstall",
+    "install",
+    "postinstall",
+    "prepack",
+    "prepare",
+    "postpack",
+    "prepublish",
+    "prepublishOnly",
+    "publish",
+    "postpublish",
+    "preversion",
+    "version",
+    "postversion"
+  ],
+  "archive": {
+    "package/README.md": {
+      "mode": "0644",
+      "sha256": "9728da2c63e83c3795d9b38795f43f0b4c8b55d302de45c06d5f1f67af515634",
+      "source": "README.md"
+    },
+    "package/bin/run": {
+      "mode": "0755",
+      "sha256": "41391377d147c1b9ddd38cf87fc086e4ff821837f8caeaa09099ea6a4f3ce044",
+      "source": "bin/run"
+    },
+    "package/bin/run.cmd": {
+      "mode": "0644",
+      "sha256": "3772ee3e6cdd9069e59ee141e13c3dbccc9b7b8c9cf48852df6ceb9cb210dfcd",
+      "source": "bin/run.cmd"
+    },
+    "package/package.json": {
+      "mode": "0644",
+      "sha256": "4efaa9243964f68758f730c6b49b33bd5052b211a14f16a18070a3836eea465d",
+      "source": "package.json"
+    },
+    "package/src/commands/cli-101-training/examples.js": {
+      "mode": "0644",
+      "sha256": "ae5bb6e993b96d3856e3f99724f6e25b2179e5a2c383ddb0a2aaff615edb2369",
+      "source": "src/commands/cli-101-training/examples.js"
+    },
+    "package/src/commands/cli-101-training/feedback.js": {
+      "mode": "0644",
+      "sha256": "b288fd2ab748210531a0eecea71f4691fcee0b2973d3494111ae4ae5bcdbc74b",
+      "source": "src/commands/cli-101-training/feedback.js"
+    },
+    "package/src/commands/cli-101-training/welcome.js": {
+      "mode": "0644",
+      "sha256": "93472354e444d2b158aee20ad7635bd89e3299a31752bb532e2f218b66c37bae",
+      "source": "src/commands/cli-101-training/welcome.js"
+    },
+    "package/src/oclif-host.js": {
+      "mode": "0644",
+      "sha256": "0676710c505508bcc376878d544a033ab3954effb0fb9d56fdb95fc050c4a999",
+      "source": "src/oclif-host.js"
+    }
+  }
+}
