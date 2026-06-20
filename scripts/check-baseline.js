@@ -687,7 +687,7 @@ function main() {
     }
   }
   for (const phrase of [
-    'ROOT := $(abspath $(dir $(lastword $(MAKEFILE_LIST))))',
+    'override ROOT := $(abspath $(dir $(lastword $(MAKEFILE_LIST))))',
     'cd "$(ROOT)" && $(NPM) run lint',
     'cd "$(ROOT)" && $(NPM) test',
     'cd "$(ROOT)" && $(NPM) run build'
