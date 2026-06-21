@@ -108,7 +108,7 @@ Detected npm scripts:
 ## Testing and Verification
 
 Pinned hosted Linux and Windows validation performs a locked, script-disabled
-install, audits the full dependency graph, runs `npm test`, and validates package
+install, audits the full dependency graph, runs `node scripts/repository-gate.js test`, and validates package
 contents on the exact Node 22.13 compatibility floor and Node 24 without retaining
 checkout credentials.
 
@@ -124,7 +124,11 @@ checkout credentials.
 - `node test_repository_gate.js`
 
 Package scripts invoke the repository-owned Node gate directly so hosted Linux
-and Windows validation do not depend on Make variable or shell precedence.
+and Windows validation do not depend on Make variable or shell precedence. The
+hosted workflow invokes that gate without npm so `pretest` and `posttest`
+lifecycle hooks cannot run before or after validation. Package aliases are
+convenience commands for an already reviewed tree; the direct gate is the
+authoritative validation entrypoint.
 Make is explicitly not a trusted validation entrypoint: every Make invocation
 fails during parsing before recipes or shell functions can claim validation.
 

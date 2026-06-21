@@ -154,14 +154,19 @@ function main() {
       failures.push('package.json scripts must remain Windows-compatible and must not delegate authority to Make');
     }
   }
+  for (const scriptName of ['build', 'check', 'lint', 'test']) {
+    for (const lifecyclePrefix of ['pre', 'post']) {
+      const lifecycleScript = `${lifecyclePrefix}${scriptName}`;
+      if (pkg.scripts[lifecycleScript]) {
+        failures.push(`package.json must not define protected npm lifecycle hook ${lifecycleScript}`);
+      }
+    }
+  }
   if (pkg.scripts.postpack !== 'node -e "require(\'fs\').rmSync(\'oclif.manifest.json\', {force: true})"') {
     failures.push('package.json postpack cleanup must remain portable across hosted Linux and Windows');
   }
   if (pkg.scripts.prepack !== 'oclif manifest && oclif readme' || pkg.scripts.version !== 'oclif readme && git add README.md') {
     failures.push('package lifecycle scripts must use the maintained oclif utility CLI');
-  }
-  if (pkg.scripts.posttest) {
-    failures.push('posttest must not hide the explicit hosted production-audit gate');
   }
   if (!Array.isArray(pkg.files) || !pkg.files.includes('/bin')) {
     failures.push('package.json files must include /bin so launchers are published');
@@ -347,12 +352,15 @@ function main() {
     'cache: npm',
     'run: npm ci --ignore-scripts',
     'run: node scripts/check-audit.js',
-    'run: npm test',
+    'run: node scripts/repository-gate.js test',
     'run: npm pack --dry-run'
   ]) {
     if (!workflow.includes(phrase)) {
       failures.push(`Check workflow must keep ${phrase}`);
     }
+  }
+  if (workflow.includes('run: npm test')) {
+    failures.push('Check workflow must invoke the repository gate directly without npm lifecycle hooks');
   }
   const expectedActions = [
     'actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10',

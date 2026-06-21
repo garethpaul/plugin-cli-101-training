@@ -2,6 +2,9 @@
 
 ## 2026-06-20
 
+- Moved hosted validation from `npm test` to the direct repository gate and
+  rejected protected npm lifecycle hooks after reproducing a `pretest` false
+  green that replaced the verifier before it ran.
 - Added a repository-owned Node validation gate for package scripts and made
   Make fail closed before shell execution, with attack coverage for `SHELL`,
   `MAKEFLAGS`, `MAKEFILES`, earlier and later makefiles, `NPM`, `ROOT`, command

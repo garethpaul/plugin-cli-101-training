@@ -70,7 +70,7 @@ match the reviewed local launcher behavior.
 
 Pinned, read-only hosted Linux and Windows validation uses the committed
 lockfile with lifecycle scripts disabled, audits the full dependency graph, runs
-the repository-owned Node validation gate through package scripts, and validates
+the repository-owned Node validation gate directly without npm lifecycle hooks, and validates
 package contents on the exact Node 22.13 compatibility floor and Node 24. It
 does not retain checkout credentials or use Twilio credentials. Make is not a
 trusted validation entrypoint and fails during parsing; package scripts do not
@@ -90,9 +90,10 @@ vulnerable package entry. The launcher preloads js-yaml 4's safe-by-default
 
 Dependency updates should come from trusted package managers and should keep lockfiles in sync when lockfiles exist. Do not commit credentials, private keys, tokens, generated secrets, or machine-local configuration. If a vulnerability depends on a compromised package, typosquatting risk, insecure transitive dependency, or unsafe build step, include the package name, affected version, and the path through which it is used.
 
-Run `npm run check`, `npm run lint`, `npm run build`, and `npm test` before
+Run `node scripts/repository-gate.js test` before
 changing command examples, package scripts, or credential-adjacent Twilio CLI
-behavior.
+behavior. The npm aliases are convenience commands for an already reviewed
+tree, not the hosted validation authority.
 
 ## Safe Research Guidelines
 

@@ -73,6 +73,15 @@ function markerWasWritten(marker) {
   return fs.existsSync(marker) && fs.readFileSync(marker, 'utf8').length > 0;
 }
 
+function copyRepository(destination) {
+  fs.cpSync(ROOT, destination, {
+    recursive: true,
+    filter(source) {
+      return !['.git', 'node_modules'].includes(path.basename(source));
+    }
+  });
+}
+
 function makeEnv(fixture, extra = {}) {
   return {
     ...process.env,
@@ -140,6 +149,37 @@ test('package scripts invoke the repository-owned gate directly', () => {
     assert.ok(!pkg.scripts[scriptName].includes('make '), `${scriptName} must not delegate to Make`);
     assert.ok(!pkg.scripts[scriptName].includes('./'), `${scriptName} must be Windows-compatible`);
   }
+});
+
+test('hosted validation invokes the gate without npm lifecycle hooks', () => {
+  const workflow = fs.readFileSync(path.join(ROOT, '.github', 'workflows', 'check.yml'), 'utf8');
+  assert.ok(
+    workflow.includes('run: node scripts/repository-gate.js test'),
+    'hosted validation must invoke the direct repository gate'
+  );
+  assert.ok(!workflow.includes('run: npm test'), 'hosted validation must not invoke npm lifecycle hooks');
+});
+
+test('direct repository gate rejects protected npm lifecycle hooks before execution', () => {
+  const fixture = makeTempFixture();
+  const repository = path.join(fixture.directory, 'repository');
+  copyRepository(repository);
+  const packagePath = path.join(repository, 'package.json');
+  const pkg = JSON.parse(fs.readFileSync(packagePath, 'utf8'));
+  pkg.scripts.pretest = `${JSON.stringify(process.execPath)} ${JSON.stringify(fixture.markerScript)}`;
+  fs.writeFileSync(packagePath, `${JSON.stringify(pkg, null, 2)}\n`);
+
+  const result = run(process.execPath, [path.join(repository, 'scripts', 'repository-gate.js'), 'check'], {
+    cwd: fixture.externalCwd,
+    env: makeEnv(fixture)
+  });
+  assert.strictEqual(result.error, undefined, result.error && result.error.message);
+  assert.notStrictEqual(result.status, 0, 'direct gate must reject protected lifecycle hooks');
+  assert.match(
+    `${normalize(result.stdout)}\n${normalize(result.stderr)}`,
+    /protected npm lifecycle hook pretest/
+  );
+  assert.ok(!markerWasWritten(fixture.marker), 'direct gate executed the protected lifecycle hook');
 });
 
 test('direct repository gate runs from an external cwd and ignores ROOT and NPM', () => {

@@ -15,7 +15,8 @@
 ## Development commands
 
 - Install dependencies: `npm ci --ignore-scripts`
-- Full baseline: `npm test`
+- Authoritative full baseline: `node scripts/repository-gate.js test`
+- Convenience full baseline on a reviewed tree: `npm test`
 - Static checks: `npm run check`
 - Lint/static alias: `npm run lint`
 - Build/static alias: `npm run build`
@@ -62,6 +63,6 @@
 
 1. Inspect the README, Makefile, manifests, and the files directly related to the request.
 2. Make the smallest source or docs change that satisfies the task; avoid generated, vendored, or local-environment files unless required.
-3. Run the narrowest useful validation first, then `npm test` or the documented package/platform gate when available.
+3. Run the narrowest useful validation first, then `node scripts/repository-gate.js test` or the documented package/platform gate when available.
 4. If a required SDK, service credential, or external runtime is unavailable, record the skipped command and why.
 5. Summarize changed files, commands run, and remaining risks or follow-up validation.

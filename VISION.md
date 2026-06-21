@@ -14,7 +14,8 @@ Current baseline: `npm run check`, `npm run lint`, `npm run build`, and
 `npm test` verify the training command guardrails, fake placeholder examples,
 package scripts, and docs without requiring Twilio credentials or a live
 account. Package scripts call the repository-owned Node gate directly; Make
-fails closed and is not a validation entrypoint.
+fails closed and is not a validation entrypoint. Hosted validation calls the
+Node gate without npm so package lifecycle hooks cannot replace or wrap it.
 
 The current focus is:
 
