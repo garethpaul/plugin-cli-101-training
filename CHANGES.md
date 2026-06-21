@@ -2,6 +2,10 @@
 
 ## 2026-06-20
 
+- Added a repository-owned Node validation gate for package scripts and made
+  Make fail closed before shell execution, with attack coverage for `SHELL`,
+  `MAKEFLAGS`, `MAKEFILES`, earlier and later makefiles, `NPM`, `ROOT`, command
+  variables, and recipe replacement.
 - Overrode both legacy oclif parser paths with patched `js-yaml 4.2.0` while
   preserving the direct Twilio CLI Core and oclif compatibility versions.
 - Replaced the temporary reviewed-advisory allowance with a fail-closed audit

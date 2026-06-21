@@ -2,11 +2,14 @@
 'use strict';
 
 const assert = require('assert');
+const fs = require('fs');
+const os = require('os');
 const path = require('path');
 const { spawnSync } = require('child_process');
 
 const ROOT = __dirname;
 const RUN = path.join(ROOT, 'bin', 'run');
+const CLI_HOME = fs.mkdtempSync(path.join(os.tmpdir(), 'plugin-cli-oclif-home-'));
 const yaml = require('./src/js-yaml-compat');
 
 assert.strictEqual(yaml.safeLoad, yaml.load);
@@ -20,7 +23,12 @@ function runCli(args) {
     encoding: 'utf8',
     env: {
       ...process.env,
-      FORCE_COLOR: '0'
+      FORCE_COLOR: '0',
+      HOME: CLI_HOME,
+      USERPROFILE: CLI_HOME,
+      XDG_CACHE_HOME: path.join(CLI_HOME, '.cache'),
+      XDG_CONFIG_HOME: path.join(CLI_HOME, '.config'),
+      XDG_DATA_HOME: path.join(CLI_HOME, '.local', 'share')
     }
   });
 

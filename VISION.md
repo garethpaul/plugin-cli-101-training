@@ -11,9 +11,10 @@ The goal is to keep the plugin small, teachable, and safe for learners who are
 copying commands into their own Twilio environments.
 
 Current baseline: `npm run check`, `npm run lint`, `npm run build`, and
-`make check` verify the training command guardrails, fake placeholder examples,
+`npm test` verify the training command guardrails, fake placeholder examples,
 package scripts, and docs without requiring Twilio credentials or a live
-account.
+account. Package scripts call the repository-owned Node gate directly; Make
+fails closed and is not a validation entrypoint.
 
 The current focus is:
 
@@ -47,8 +48,9 @@ Priority:
   access or implicit clipboard writes
 - Keep `bin/run` as the executable launcher for Unix installs
 - Keep packaged launcher files included for npm publishes
-- Keep `make lint`, `make build`, `npm run lint`, and `npm run build` available
-  as stable static gate aliases
+- Keep `npm run lint` and `npm run build` available as stable static gate aliases
+- Keep validation authority independent of caller-controlled Make variables,
+  included makefiles, and replacement recipes
 - Maintain oclif packaging metadata for Twilio CLI plugin installation
 - Preserve the `@oclif/core` 1.x compatibility boundary required by Twilio CLI
   Core 8.3.4 until the host itself adopts a newer core contract
@@ -66,8 +68,8 @@ Contribution rules:
 - Keep command examples explicit about the environment they affect.
 - Keep examples on fake placeholder values and no phone-number purchases.
 - Keep clipboard copy behind an explicit flag.
-- Keep `npm run check`, `npm run lint`, `npm run build`, and `make check`
-  passing when command behavior changes.
+- Keep `npm run check`, `npm run lint`, `npm run build`, and `npm test` passing
+  when command behavior changes.
 - Update README output when command behavior changes.
 
 ## Security And Responsible Use

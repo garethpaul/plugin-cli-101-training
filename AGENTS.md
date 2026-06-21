@@ -6,7 +6,7 @@
 
 ## Project structure
 
-- `Makefile` - repository verification targets
+- `Makefile` - fail-closed redirect to package-script validation
 - `scripts` - baseline checks and helper scripts
 - `docs` - plans, notes, and generated README assets
 - `src` - primary source code
@@ -15,11 +15,10 @@
 ## Development commands
 
 - Install dependencies: `npm ci --ignore-scripts`
-- Full baseline: `make check`
-- Combined verification: `make verify`
-- Lint/static checks: `make lint`
-- Tests: `make test`
-- Build: `make build`
+- Full baseline: `npm test`
+- Static checks: `npm run check`
+- Lint/static alias: `npm run lint`
+- Build/static alias: `npm run build`
 - package script `build`: `npm run build`
 - package script `lint`: `npm run lint`
 - package script `test`: `npm test`
@@ -34,7 +33,7 @@
 ## Testing guidance
 
 - Test-related files detected: `test_examples_catalog.js`, `test_welcome_name_format.js`
-- Start with the narrowest relevant test or Make target, then run `make check` before handing off if the change is not documentation-only.
+- Start with the narrowest relevant test, then run `npm test` before handing off if the change is not documentation-only.
 - Keep README verification notes in sync when commands, fixtures, or supported toolchains change.
 
 ## PR / change guidance
@@ -63,6 +62,6 @@
 
 1. Inspect the README, Makefile, manifests, and the files directly related to the request.
 2. Make the smallest source or docs change that satisfies the task; avoid generated, vendored, or local-environment files unless required.
-3. Run the narrowest useful validation first, then `make check` or the documented package/platform gate when available.
+3. Run the narrowest useful validation first, then `npm test` or the documented package/platform gate when available.
 4. If a required SDK, service credential, or external runtime is unavailable, record the skipped command and why.
 5. Summarize changed files, commands run, and remaining risks or follow-up validation.
