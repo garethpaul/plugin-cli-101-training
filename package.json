@@ -47,12 +47,12 @@
     "url": "https://github.com/garethpaul/plugin-cli-101-training.git"
   },
   "scripts": {
-    "build": "npm run check",
-    "check": "node scripts/check-baseline.js",
-    "lint": "npm run check",
+    "build": "node scripts/repository-gate.js build",
+    "check": "node scripts/repository-gate.js check",
+    "lint": "node scripts/repository-gate.js lint",
     "postpack": "node -e \"require('fs').rmSync('oclif.manifest.json', {force: true})\"",
     "prepack": "oclif manifest && oclif readme",
-    "test": "npm run check && node test_audit_policy.js && node test_welcome_name_format.js && node test_examples_catalog.js && node test_oclif_commands.js",
+    "test": "node scripts/repository-gate.js test",
     "version": "oclif readme && git add README.md"
   },
   "devDependencies": {

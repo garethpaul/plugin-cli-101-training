@@ -26,7 +26,7 @@ This README is based on the checked-in source, manifests, scripts, and repositor
 
 - `.gitignore` - generated output, dependency, log, and environment ignores
 - `CHANGES.md` - baseline change log
-- `Makefile` - repository-level verification wrapper
+- `Makefile` - fail-closed redirect to package-script validation
 - `README.md` - project overview and local usage notes
 - `package.json` - JavaScript dependency and script metadata
 - `bin` - source or example code
@@ -42,7 +42,8 @@ Additional scan context:
 - Dependency and build manifests: package.json
 - Entry points or build surfaces: package.json, Makefile
 - Behavior tests: `test_examples_catalog.js`, `test_welcome_name_format.js`,
-  and the installed launcher smoke suite `test_oclif_commands.js`
+  the installed launcher smoke suite `test_oclif_commands.js`, and repository
+  gate attack coverage in `test_repository_gate.js`
 - The VM harnesses execute the interactive welcome and example prompt paths,
   including sanitized prompted names and clipboard opt-in behavior.
 
@@ -74,8 +75,8 @@ calls before loading oclif core.
 
 ## Running or Using the Project
 
-- Run `make check`, `make lint`, or `make build` before changing commands or
-  examples.
+- Run `npm run check`, `npm run lint`, or `npm run build` before changing
+  commands or examples.
 - Use `./bin/run cli-101-training:welcome` to launch the welcome command after
   dependencies are installed.
 - Use `./bin/run cli-101-training:examples --example sms` to print a specific
@@ -96,36 +97,40 @@ calls before loading oclif core.
 
 Detected npm scripts:
 
-- `npm run build` - `npm run check`
+- `npm run build` - `node scripts/repository-gate.js build`
 - `npm run postpack` - portable Node cleanup for `oclif.manifest.json`
 - `npm run prepack` - `oclif manifest && oclif readme`
-- `npm run check` - `node scripts/check-baseline.js`
-- `npm run lint` - `npm run check`
+- `npm run check` - `node scripts/repository-gate.js check`
+- `npm run lint` - `node scripts/repository-gate.js lint`
 - `npm run test` - static, focused behavior, and installed command smoke tests
 - `npm run version` - `oclif readme && git add README.md`
 
 ## Testing and Verification
 
 Pinned hosted Linux and Windows validation performs a locked, script-disabled
-install, audits the full dependency graph, runs `npm test`, and validates package
+install, audits the full dependency graph, runs `node scripts/repository-gate.js test`, and validates package
 contents on the exact Node 22.13 compatibility floor and Node 24 without retaining
 checkout credentials.
 
-- `make check`
-- `make lint`
-- `make build`
 - `npm run check`
 - `npm run lint`
 - `npm run build`
 - `npm test`
 - `node scripts/check-baseline.js`
+- `node scripts/repository-gate.js check`
 - `node test_welcome_name_format.js`
 - `node test_examples_catalog.js`
 - `node test_oclif_commands.js`
+- `node test_repository_gate.js`
 
-The Make targets resolve the repository root from the loaded Makefile, so the
-same full gate can be invoked through an absolute Makefile path from another
-working directory.
+Package scripts invoke the repository-owned Node gate directly so hosted Linux
+and Windows validation do not depend on Make variable or shell precedence. The
+hosted workflow invokes that gate without npm so `pretest` and `posttest`
+lifecycle hooks cannot run before or after validation. Package aliases are
+convenience commands for an already reviewed tree; the direct gate is the
+authoritative validation entrypoint.
+Make is explicitly not a trusted validation entrypoint: every Make invocation
+fails during parsing before recipes or shell functions can claim validation.
 
 When the required SDK or runtime is unavailable, use static checks and source review first, then verify on a machine that has the matching platform toolchain.
 
@@ -161,9 +166,9 @@ When the required SDK or runtime is unavailable, use static checks and source re
 
 ## Maintenance Notes
 
-- Run `npm run check`, `npm run lint`, `npm run build`, `make lint`,
-  `make build`, and `make check` before changing examples, command prompts,
-  package scripts, or Twilio credential handling.
+- Run `npm run check`, `npm run lint`, `npm run build`, and `npm test` before
+  changing examples, command prompts, package scripts, or Twilio credential
+  handling.
 - Keep the executable launcher mode on `bin/run` intact when editing packaging
   files.
 - Keep packaged launcher files included when editing `package.json`.

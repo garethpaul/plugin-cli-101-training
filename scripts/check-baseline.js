@@ -65,6 +65,7 @@ const REQUIRED = [
   GRAPHEME_LIMIT_PLAN,
   'scripts/check-audit.js',
   'scripts/check-baseline.js',
+  'scripts/repository-gate.js',
   'src/commands/cli-101-training/examples.js',
   'src/commands/cli-101-training/feedback.js',
   'src/commands/cli-101-training/welcome.js',
@@ -72,6 +73,7 @@ const REQUIRED = [
   'test_examples_catalog.js',
   'test_audit_policy.js',
   'test_oclif_commands.js',
+  'test_repository_gate.js',
   'test_welcome_name_format.js'
 ];
 
@@ -138,26 +140,33 @@ function main() {
   ) {
     failures.push('package-lock.json must resolve form-data 4.0.6 and one patched js-yaml 4.2.0 copy');
   }
-  if (pkg.scripts.check !== 'node scripts/check-baseline.js') {
-    failures.push('package.json must expose npm run check');
+  const expectedGateScripts = {
+    check: 'node scripts/repository-gate.js check',
+    lint: 'node scripts/repository-gate.js lint',
+    build: 'node scripts/repository-gate.js build',
+    test: 'node scripts/repository-gate.js test'
+  };
+  for (const [scriptName, expectedCommand] of Object.entries(expectedGateScripts)) {
+    if (pkg.scripts[scriptName] !== expectedCommand) {
+      failures.push('package.json scripts must invoke the repository-owned gate directly');
+    }
+    if (/\bmake\b|\.\//.test(pkg.scripts[scriptName] || '')) {
+      failures.push('package.json scripts must remain Windows-compatible and must not delegate authority to Make');
+    }
   }
-  if (pkg.scripts.test !== 'npm run check && node test_audit_policy.js && node test_welcome_name_format.js && node test_examples_catalog.js && node test_oclif_commands.js') {
-    failures.push('npm test must run the static baseline, focused behavior tests, and installed oclif command smoke tests');
-  }
-  if (pkg.scripts.lint !== 'npm run check') {
-    failures.push('npm run lint must run the static baseline');
-  }
-  if (pkg.scripts.build !== 'npm run check') {
-    failures.push('npm run build must run the static baseline');
+  for (const scriptName of ['build', 'check', 'lint', 'test']) {
+    for (const lifecyclePrefix of ['pre', 'post']) {
+      const lifecycleScript = `${lifecyclePrefix}${scriptName}`;
+      if (pkg.scripts[lifecycleScript]) {
+        failures.push(`package.json must not define protected npm lifecycle hook ${lifecycleScript}`);
+      }
+    }
   }
   if (pkg.scripts.postpack !== 'node -e "require(\'fs\').rmSync(\'oclif.manifest.json\', {force: true})"') {
     failures.push('package.json postpack cleanup must remain portable across hosted Linux and Windows');
   }
   if (pkg.scripts.prepack !== 'oclif manifest && oclif readme' || pkg.scripts.version !== 'oclif readme && git add README.md') {
     failures.push('package lifecycle scripts must use the maintained oclif utility CLI');
-  }
-  if (pkg.scripts.posttest) {
-    failures.push('posttest must not hide the explicit hosted production-audit gate');
   }
   if (!Array.isArray(pkg.files) || !pkg.files.includes('/bin')) {
     failures.push('package.json files must include /bin so launchers are published');
@@ -175,6 +184,7 @@ function main() {
   for (const jsFile of [
     'scripts/check-audit.js',
     'scripts/check-baseline.js',
+    'scripts/repository-gate.js',
     'src/commands/cli-101-training/examples.js',
     'src/commands/cli-101-training/feedback.js',
     'src/commands/cli-101-training/welcome.js',
@@ -182,6 +192,7 @@ function main() {
     'test_audit_policy.js',
     'test_examples_catalog.js',
     'test_oclif_commands.js',
+    'test_repository_gate.js',
     'test_welcome_name_format.js'
   ]) {
     try {
@@ -341,12 +352,15 @@ function main() {
     'cache: npm',
     'run: npm ci --ignore-scripts',
     'run: node scripts/check-audit.js',
-    'run: npm test',
+    'run: node scripts/repository-gate.js test',
     'run: npm pack --dry-run'
   ]) {
     if (!workflow.includes(phrase)) {
       failures.push(`Check workflow must keep ${phrase}`);
     }
+  }
+  if (workflow.includes('run: npm test')) {
+    failures.push('Check workflow must invoke the repository gate directly without npm lifecycle hooks');
   }
   const expectedActions = [
     'actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10',
@@ -678,25 +692,10 @@ function main() {
   }
 
   const makefile = read('Makefile');
-  if (!makefile.includes('check: verify')) {
-    failures.push('Makefile must expose make check as the repository verification wrapper');
-  }
-  for (const phrase of ['lint:', 'build:', 'verify: lint test build']) {
-    if (!makefile.includes(phrase)) {
-      failures.push(`Makefile must include ${phrase}`);
-    }
-  }
-  for (const phrase of [
-    'ifneq ($(origin MAKEFILE_LIST),file)',
-    '$(error MAKEFILE_LIST must not be overridden)',
-    'override ROOT := $(abspath $(dir $(lastword $(MAKEFILE_LIST))))',
-    'cd "$(ROOT)" && $(NPM) run lint',
-    'cd "$(ROOT)" && $(NPM) test',
-    'cd "$(ROOT)" && $(NPM) run build'
-  ]) {
-    if (!makefile.includes(phrase)) {
-      failures.push(`Makefile must remain caller-directory independent with ${phrase}`);
-    }
+  const expectedMakefile = '.PHONY: build check lint test verify\n\n' +
+    '$(error Make is not a trusted validation entrypoint; run npm run check, npm run lint, npm test, or npm run build)\n';
+  if (makefile !== expectedMakefile) {
+    failures.push('Makefile must remain an exact fail-closed sentinel with no shell execution or recipes');
   }
 
   const svg = read('docs/readme-overview.svg');
