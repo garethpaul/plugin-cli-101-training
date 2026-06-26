@@ -27,6 +27,7 @@ const UNICODE_SEPARATOR_PLAN = 'docs/plans/2026-06-15-unicode-line-separator-nam
 const TRANSITIVE_ADVISORY_PLAN = 'docs/plans/2026-06-15-transitive-advisory-remediation.md';
 const NODE_REQUIRE_ESM_PLAN = 'docs/plans/2026-06-17-node-require-esm-floor.md';
 const GRAPHEME_LIMIT_PLAN = 'docs/plans/2026-06-17-grapheme-safe-name-limit.md';
+const RAW_INPUT_BOUND_PLAN = 'docs/plans/2026-06-26-learner-name-raw-input-bound.md';
 const REQUIRED = [
   '.github/workflows/check.yml',
   '.gitignore',
@@ -63,6 +64,7 @@ const REQUIRED = [
   TRANSITIVE_ADVISORY_PLAN,
   NODE_REQUIRE_ESM_PLAN,
   GRAPHEME_LIMIT_PLAN,
+  RAW_INPUT_BOUND_PLAN,
   'scripts/check-audit.js',
   'scripts/check-baseline.js',
   'scripts/repository-gate.js',
@@ -74,6 +76,7 @@ const REQUIRED = [
   'test_audit_policy.js',
   'test_oclif_commands.js',
   'test_repository_gate.js',
+  'test_welcome_input_bound_mutations.js',
   'test_welcome_name_format.js'
 ];
 
@@ -181,6 +184,11 @@ function main() {
     }
   }
 
+  const repositoryGate = read('scripts/repository-gate.js');
+  if (!repositoryGate.includes("'test_welcome_input_bound_mutations.js'")) {
+    failures.push('repository gate must run welcome input-bound mutations');
+  }
+
   for (const jsFile of [
     'scripts/check-audit.js',
     'scripts/check-baseline.js',
@@ -193,6 +201,7 @@ function main() {
     'test_examples_catalog.js',
     'test_oclif_commands.js',
     'test_repository_gate.js',
+    'test_welcome_input_bound_mutations.js',
     'test_welcome_name_format.js'
   ]) {
     try {
@@ -295,11 +304,14 @@ function main() {
   for (const phrase of [
     'function formatLearnerName',
     'LEARNER_NAME_MAX_GRAPHEMES = 80',
+    'LEARNER_NAME_MAX_INPUT_CODE_POINTS = 320',
+    'LEARNER_NAME_MAX_INPUT_UTF8_BYTES = 1024',
     'LEARNER_NAME_MAX_CODE_POINTS = 160',
     'LEARNER_NAME_MAX_UTF8_BYTES = 1024',
     "LEARNER_NAME_SEGMENTER = new Intl.Segmenter(undefined, { granularity: 'grapheme' })",
     'UNSAFE_TERMINAL_NAME_RE = /[\\p{Cc}\\p{Cf}\\p{Zl}\\p{Zp}]/gu',
     'function truncateByCodePointAndByte',
+    'function boundLearnerNameInput',
     "Buffer.byteLength(codePoint, 'utf8')",
     'function formatLearnerNameForPrompt',
     "replace(UNSAFE_TERMINAL_NAME_RE, '')",
@@ -308,17 +320,34 @@ function main() {
     'filter: formatLearnerName',
     'transformer: formatLearnerNameForPrompt',
     ".join('')",
+    'module.exports.boundLearnerNameInput',
     'module.exports.formatLearnerName'
   ]) {
     if (!welcome.includes(phrase)) {
       failures.push(`welcome.js must include ${phrase}`);
     }
   }
+  if ((welcome.match(/boundLearnerNameInput\(rawName\)/g) || []).length !== 2) {
+    failures.push('welcome.js must bound both formatter and prompt raw input before sanitization');
+  }
 
   const welcomeTests = read('test_welcome_name_format.js');
   for (const phrase of ["'A\\u009BB'", "'zero\\u200Dwidth'", "'zerowidth'", "'line\\u2028separator'", "'paragraph\\u2029separator'", "name: 'Line\\u2028and\\u2029paragraph'", "output.includes('Hello Alice! Thanks for taking 101 training today.')", "separatorOutput.includes('Hello Lineandparagraph! Thanks for taking 101 training today.')", 'codePointBoundaryName', "'x'.repeat(79)", "'😀'.repeat(100)", "Array.from(formatLearnerName('😀'.repeat(100))).length", "assert.strictEqual(formatLearnerName(flagBoundaryName), `${'x'.repeat(79)}🇺🇸`);", "assert.strictEqual(formatLearnerName(combiningBoundaryName), `${'x'.repeat(79)}e\\u0301`);", 'function loadWelcomeCommand(overrides = {})', "prompt: async () => ({ name: ' A\\u0000lice ' })", 'oversizedSingleGrapheme', "Buffer.byteLength(boundedSingleGrapheme, 'utf8') <= 1024", 'Array.from(boundedSingleGrapheme).length <= 160', 'unsafePromptInput', 'question.transformer', 'question.filter', '!unsafePromptOutput.join(\'\\n\').includes(unsafePromptInput)', '!/[\\p{Cc}\\p{Cf}\\p{Zl}\\p{Zp}]/u.test(line)']) {
     if (!welcomeTests.includes(phrase)) {
       failures.push(`welcome name tests must include ${phrase}`);
+    }
+  }
+
+  for (const phrase of ['boundLearnerNameInput', 'hiddenPrefix', 'boundedPromptTransforms', 'Hello there! Thanks for taking 101 training today.']) {
+    if (!welcomeTests.includes(phrase)) {
+      failures.push(`welcome input-bound tests must include ${phrase}`);
+    }
+  }
+
+  const inputBoundMutations = read('test_welcome_input_bound_mutations.js');
+  for (const phrase of ['formatter raw bound', 'prompt raw bound', 'raw code-point cap', 'raw byte cap', 'WELCOME_SOURCE']) {
+    if (!inputBoundMutations.includes(phrase)) {
+      failures.push(`welcome input-bound mutations must include ${phrase}`);
     }
   }
 
@@ -439,7 +468,8 @@ function main() {
     'executable launcher',
     'packaged launcher files',
     'hosted Linux',
-    'interactive welcome and example prompt paths'
+    'interactive welcome and example prompt paths',
+    'raw learner-name input'
   ]) {
     if (!docs.toLowerCase().includes(phrase.toLowerCase())) {
       failures.push(`docs must mention ${phrase}`);
@@ -646,6 +676,12 @@ function main() {
   for (const evidence of ['node test_welcome_name_format.js', 'npm test', 'make check', 'external working directory', 'npm audit', 'npm pack --dry-run', 'Six isolated hostile mutations were rejected', 'git diff --check']) {
     if (!graphemeLimitVerification.includes(evidence)) {
       failures.push(`grapheme-safe name limit verification must mention ${evidence}`);
+    }
+  }
+  const rawInputBoundPlan = read(RAW_INPUT_BOUND_PLAN);
+  for (const phrase of ['status: completed', '320 code points', '1024 UTF-8 bytes', 'before Unicode sanitization', 'four isolated hostile mutations', 'Node 22.13.0', 'Node 24']) {
+    if (!rawInputBoundPlan.includes(phrase)) {
+      failures.push(`raw learner-name input plan must mention ${phrase}`);
     }
   }
   if (!transitiveAdvisoryVerification || /\b(?:pending|todo|tbd|not run)\b/i.test(transitiveAdvisoryVerification)) {

@@ -9,6 +9,7 @@ const BASELINE = 'scripts/check-baseline.js';
 const TESTS = Object.freeze([
   'test_audit_policy.js',
   'test_welcome_name_format.js',
+  'test_welcome_input_bound_mutations.js',
   'test_examples_catalog.js',
   'test_oclif_commands.js',
   'test_repository_gate.js'
