@@ -38,6 +38,7 @@ Priority:
 - Strip Unicode line and paragraph separators from learner names before
   terminal display
 - Keep learner-name truncation grapheme-safe at the 80-character boundary
+- Bound raw learner-name input before Unicode sanitization and segmentation
 - Keep the frozen example catalog limited to reviewed fake placeholders
 - Keep the `form-data 4.0.6` transitive advisory override until Twilio CLI Core
   absorbs the patched range

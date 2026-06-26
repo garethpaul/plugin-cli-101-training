@@ -91,6 +91,9 @@ calls before loading oclif core.
   format characters (including bidirectional formatting controls) plus Unicode
   line and paragraph separators, and caps displayed names at 80 grapheme clusters without splitting flags,
   combining sequences, or non-BMP characters.
+- Raw learner-name input is capped at 320 code points and 1024 UTF-8 bytes
+  before Unicode sanitization or grapheme segmentation, preventing oversized
+  invisible prefixes from forcing unbounded preprocessing.
 - Keep `bin/run` as the executable launcher for Unix installs; `bin/run.cmd`
   remains the non-executable Windows wrapper.
 - Packaged launcher files stay included through the package `files` list.

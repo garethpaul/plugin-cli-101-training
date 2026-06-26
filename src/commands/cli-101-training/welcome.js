@@ -3,6 +3,8 @@ const chalk = require('chalk');
 const inquirer = require('inquirer');
 
 const LEARNER_NAME_MAX_GRAPHEMES = 80;
+const LEARNER_NAME_MAX_INPUT_CODE_POINTS = 320;
+const LEARNER_NAME_MAX_INPUT_UTF8_BYTES = 1024;
 const LEARNER_NAME_MAX_CODE_POINTS = 160;
 const LEARNER_NAME_MAX_UTF8_BYTES = 1024;
 const LEARNER_NAME_SEGMENTER = new Intl.Segmenter(undefined, { granularity: 'grapheme' });
@@ -38,19 +40,29 @@ function truncateLearnerName(value) {
     .join('');
 }
 
+function boundLearnerNameInput(value) {
+  return truncateByCodePointAndByte(
+    value,
+    LEARNER_NAME_MAX_INPUT_CODE_POINTS,
+    LEARNER_NAME_MAX_INPUT_UTF8_BYTES
+  ).result;
+}
+
 function sanitizeLearnerName(value) {
   return String(value).replace(UNSAFE_TERMINAL_NAME_RE, '');
 }
 
 function formatLearnerName(value) {
   const rawName = value === undefined || value === null ? '' : String(value);
-  const name = truncateLearnerName(sanitizeLearnerName(rawName).trim());
+  const boundedInput = boundLearnerNameInput(rawName);
+  const name = truncateLearnerName(sanitizeLearnerName(boundedInput).trim());
   return name || 'there';
 }
 
 function formatLearnerNameForPrompt(value) {
   const rawName = value === undefined || value === null ? '' : String(value);
-  return truncateLearnerName(sanitizeLearnerName(rawName));
+  const boundedInput = boundLearnerNameInput(rawName);
+  return truncateLearnerName(sanitizeLearnerName(boundedInput));
 }
 
 class Welcome extends Command {
@@ -88,4 +100,5 @@ class Welcome extends Command {
 Welcome.description = 'Welcome to Twilio 101 Training';
 
 module.exports = Welcome;
+module.exports.boundLearnerNameInput = boundLearnerNameInput;
 module.exports.formatLearnerName = formatLearnerName;

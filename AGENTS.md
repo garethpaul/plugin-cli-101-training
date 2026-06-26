@@ -51,6 +51,7 @@
 - Training commands can affect live accounts when copied with real credentials. Keep side effects visible, use fake placeholder values, and prefer read-only examples for phone-number workflows.
 - Clipboard writes are opt-in through `--copy`; the default examples command prints without changing the local clipboard.
 - Remove Unicode control and format characters before displaying learner names.
+- Bound raw learner-name input before Unicode sanitization and segmentation.
 - Keep the 80-character learner-name limit grapheme-safe for flags, combining
   sequences, and non-BMP characters.
 - The frozen example catalog should stay limited to reviewed fake placeholders.

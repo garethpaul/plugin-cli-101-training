@@ -1,5 +1,24 @@
 # Changes
 
+## 2026-06-26 15:35 PDT - P1 - Bound raw learner-name input
+
+- Summary: capped raw prompt input at 320 code points and 1024 UTF-8 bytes
+  before Unicode sanitization and grapheme segmentation.
+- Files: added the shared raw-input bound, focused formatter and interactive
+  prompt tests, four isolated hostile mutations, baseline ownership, a
+  completed plan, and synchronized guidance.
+- Tests: the focused welcome test failed before implementation because 100,000
+  invisible format characters were scanned away to reveal a trailing name;
+  Node 22.13.0 and 24.18.0 passed the full repository gate, four mutations,
+  zero-finding audit, package dry run, and external-CWD execution.
+- Findings: the displayed value was bounded, but the sanitizer still scanned
+  the entire pasted string before any code-point or byte limit applied.
+- Blockers: the full hosted Linux/Windows matrix remains required before merge.
+  The requested Codex review for PR #12 returned HTTP 401 and was skipped after
+  one attempt as instructed.
+- Next action: merge only PR #12's exact hosted-green head, then verify the
+  default-branch Check and CodeQL workflows.
+
 ## 2026-06-20
 
 - Moved hosted validation from `npm test` to the direct repository gate and

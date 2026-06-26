@@ -59,6 +59,9 @@ reorder console text or issue terminal control sequences. Strip Unicode line
 and paragraph separators so display-only names cannot add terminal lines.
 Apply the learner-name display limit by grapheme clusters so truncation cannot
 split flags, combining sequences, or non-BMP characters at the terminal boundary.
+Cap raw learner-name input at 320 code points and 1024 UTF-8 bytes before
+Unicode sanitization so invisible control prefixes cannot force unbounded
+regular-expression work or reveal an unbounded trailing value.
 
 Keep `bin/run` as the executable launcher and avoid permission churn in
 packaging files, because broken launcher metadata can change how learners run
